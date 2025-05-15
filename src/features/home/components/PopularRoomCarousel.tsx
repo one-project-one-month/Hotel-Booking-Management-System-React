@@ -89,7 +89,6 @@ export default function PopularRoomCarousel() {
         className="relative mx-16 my-12 "
         opts={{
           align: "start",
-          loop: true,
           containScroll: "trimSnaps",
         }}
       >
