@@ -4,7 +4,7 @@ import Home from '@/features/home';
 import Room from '@/features/room';
 import Booking from '@/features/booking';
 import Profile from '@/features/profile';
-import Search from '@/components/search';
+import SearchBar from '@/components/search-bar';
 
 
 const routes = [
@@ -14,7 +14,7 @@ const routes = [
         children: [
             {
                 path: "/",
-                Component: Search,
+                Component: SearchBar,
                 children: [
                     { index: true, Component: Home }
                 ]
