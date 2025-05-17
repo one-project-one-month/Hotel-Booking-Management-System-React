@@ -5,7 +5,7 @@ import RoomList from "./RoomList";
 import CarouselSkeleton from "./CarouselSkeleton";
 import CarouselControls from "./CarouselControls";
 
-// Simulate fetching rooms with delay
+
 const fetchRooms = (): Promise<Room[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
