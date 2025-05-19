@@ -8,7 +8,7 @@ export default function Room() {
         <div className={"container mx-auto px-4"}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto">
             {rooms.map((room: Room, index: number) => (
-                <Room_ room={room} key={index}/>
+                <Room_ room={room} key={index}/> 
             ))}
           </div>
         </div>
