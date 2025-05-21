@@ -146,7 +146,7 @@ export default function RoomCarousel({
           </Suspense>
         </CarouselContent>
 
-        <div className="absolute -top-7 text-lg">{title}</div>
+        <div className="absolute -top-7 text-lg font-semibold">{title}</div>
 
         {isFeatured && (
           <div className="border absolute -top-6 right-10">
