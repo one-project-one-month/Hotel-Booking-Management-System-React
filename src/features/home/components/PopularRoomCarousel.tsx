@@ -159,7 +159,7 @@ export default function RoomCarousel({
           <div className="absolute -top-6 right-0">
             <a
               href=""
-              className=" underline text-pink-600 hover:text-pink-700 focus:text-pink-700 text-xs"
+              className=" underline text-pink-600 hover:text-pink-700 focus:text-pink-700 text-sm"
             >
               See More...
             </a>
