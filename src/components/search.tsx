@@ -44,7 +44,7 @@ export default function Search() {
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <div tabIndex={0}>
-                                            <CardContainer>
+                                            <CardContainer className="h-[100px] md:h-auto">
                                                 <h3 className="text-sm font-medium">Choose Dates</h3>
                                             </CardContainer>
                                         </div>
