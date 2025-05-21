@@ -1,21 +1,26 @@
-import { type Room, rooms } from "@/mock/rooms.ts";
-import PopularRoom from "@/features/home/components/PopularRoom.tsx";
-import PopularRoomCarousel from "./components/PopularRoomCarousel";
-import Login from "../auth/Login";
+import { rooms } from "@/mock/rooms.ts";
+import RoomCarousel from "./components/PopularRoomCarousel";
 
 export default function Home() {
-    return (
-        <>
-            <PopularRoomCarousel />
-            
-            <div className="container px-4 mx-auto">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {rooms.slice(0, 3).map((room: Room, index: number) => (
-                        <PopularRoom room={room} key={index} />
-                    ))}
-                </div>
-            </div>
-            <Login />
-        </>
-    );
+  const deluxeRooms = rooms.filter((room) => room.type === "Deluxe");
+  const standardRooms = rooms.filter((room) => room.type === "Standard");
+  return (
+    <>
+      <RoomCarousel
+        isFeatured={true}
+        roomData={rooms}
+        title={"Our Popular Rooms"}
+      />
+      <RoomCarousel
+        isFeatured={false}
+        roomData={deluxeRooms}
+        title={"Our Luxury Rooms"}
+      />
+      <RoomCarousel
+        isFeatured={false}
+        roomData={standardRooms}
+        title={"Standard Rooms"}
+      />
+    </>
+  );
 }
