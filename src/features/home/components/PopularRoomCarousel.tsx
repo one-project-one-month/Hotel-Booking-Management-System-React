@@ -90,7 +90,7 @@ function PopularRoomCard({ room }: PopularRoomCardProps) {
           </div>
         )}
       </div>
-      <p className=" text-lg leading-6">{room.details.title}</p>
+      <p>{room.details.title}</p>
       <p className="text-gray-500 text-xs">
         ${room.price} for night,
         {room.guestLimit === 1
@@ -146,7 +146,7 @@ export default function RoomCarousel({
           </Suspense>
         </CarouselContent>
 
-        <div className="absolute -top-6 text-sm font-bold">{title}</div>
+        <div className="absolute -top-7 text-lg">{title}</div>
 
         {isFeatured && (
           <div className="border absolute -top-6 right-10">
