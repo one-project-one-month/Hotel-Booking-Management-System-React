@@ -5,6 +5,11 @@ import Room from '@/features/room';
 import Booking from '@/features/booking';
 import Profile from '@/features/profile';
 import SearchBar from '@/components/search-bar';
+import ProfileNavigation from '@/components/layout/profile-navigation';
+import BookingHistory from '@/features/profile/booking_history';
+import Coupon from '@/features/profile/coupon';
+import WishLists from '@/features/profile/wish_lists';
+import Receipt from '@/features/profile/receipt';
 
 
 const routes = [
@@ -21,7 +26,17 @@ const routes = [
             },
             { path: "/rooms", Component: Room },
             { path: "/bookings", Component: Booking },
-            { path: "/profile", Component: Profile },
+            { 
+                Component: ProfileNavigation,
+                children: [
+                    { path: "/profile", Component: Profile },
+                    { path: "/history", Component: BookingHistory },
+                    { path: "/coupons", Component: Coupon },
+                    { path: "/wish-lists", Component: WishLists },
+                    { path: "/receipt", Component: Receipt },
+
+                ]
+            },
         ],
     },
 ];
