@@ -75,7 +75,7 @@ export default function Search() {
           </section>
         </PopoverContainer>
 
-        <div className="my-2">
+        <div className="my-2 pe-3">
           <Button className="rounded-full cursor-pointer ml-auto w-12 h-12 shadow-md bg-pink-600 hover:bg-pink-700 focus:bg-pink-700">
             <SearchIcon />
           </Button>
