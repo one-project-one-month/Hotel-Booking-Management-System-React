@@ -1,3 +1,4 @@
+import RoomDetail from "@/features/roomDetails";
 import { createBrowserRouter } from 'react-router';
 import Navbar from '@/components/layout/navbar';
 import Home from '@/features/home';
@@ -11,34 +12,33 @@ import Coupon from '@/features/profile/coupon';
 import WishLists from '@/features/profile/wish_lists';
 import Receipt from '@/features/profile/receipt';
 
-
 const routes = [
-    {
+  {
+    path: "/",
+    Component: Navbar,
+    children: [
+      {
         path: "/",
-        Component: Navbar,
+        Component: SearchBar,
         children: [
-            {
-                path: "/",
-                Component: SearchBar,
-                children: [
-                    { index: true, Component: Home }
-                ]
-            },
-            { path: "/rooms", Component: Room },
-            { path: "/bookings", Component: Booking },
-            { 
-                Component: ProfileNavigation,
-                children: [
-                    { path: "/profile", Component: Profile },
-                    { path: "/history", Component: BookingHistory },
-                    { path: "/coupons", Component: Coupon },
-                    { path: "/wish-lists", Component: WishLists },
-                    { path: "/receipt", Component: Receipt },
-
-                ]
-            },
+          { index: true, Component: Home },
         ],
-    },
+      },
+      { path: "/rooms", Component: Room },
+      { path: "/rooms/:roomNo", Component: RoomDetail },
+      { path: "/bookings", Component: Booking },
+      {
+        Component: ProfileNavigation,
+        children: [
+          { path: "/profile", Component: Profile },
+          { path: "/history", Component: BookingHistory },
+          { path: "/coupons", Component: Coupon },
+          { path: "/wish-lists", Component: WishLists },
+          { path: "/receipt", Component: Receipt },
+        ],
+      },
+    ],
+  },
 ];
 
 export const router = createBrowserRouter(routes);
