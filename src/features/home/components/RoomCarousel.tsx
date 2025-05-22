@@ -10,7 +10,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import CarouselSkeleton from "./CarouselSkeleton";
-type PopularRoomCardProps = {
+import { Link } from "react-router";
+type RoomCardProps = {
   room: Room;
 };
 type CarouselProps = {
@@ -42,7 +43,7 @@ type CarouselProps = {
 // }
 
 // Room Card
-function PopularRoomCard({ room }: PopularRoomCardProps) {
+function PopularRoomCard({ room }: RoomCardProps) {
   const imgUrl = room.imgUrl[0];
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -140,7 +141,9 @@ export default function RoomCarousel({
                 key={room.roomNo}
                 className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
               >
-                <PopularRoomCard room={room} />
+                <Link to={`/rooms/${room.roomNo}`}>
+                  <PopularRoomCard room={room} />
+                </Link>
               </CarouselItem>
             ))}
           </Suspense>

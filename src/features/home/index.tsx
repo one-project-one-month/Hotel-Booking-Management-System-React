@@ -1,5 +1,5 @@
 import { rooms } from "@/mock/rooms.ts";
-import RoomCarousel from "./components/PopularRoomCarousel";
+import RoomCarousel from "./components/RoomCarousel";
 
 export default function Home() {
   const deluxeRooms = rooms.filter((room) => room.type === "Deluxe");
