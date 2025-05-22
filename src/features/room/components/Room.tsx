@@ -8,7 +8,7 @@ export default function Room({ room }: { room: Room }) {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
-    <div className="bg-[#f0f0f0] rounded-2xl shadow-md overflow-hidden hover:shadow-lg flex flex-col">
+    <div className="rounded-2xl overflow-hidden hover:shadow-md">
       <div className="relative h-60">
         {!imgLoaded && <Skeleton className="w-full h-full" />}
         <img
@@ -20,18 +20,27 @@ export default function Room({ room }: { room: Room }) {
           }`}
           onLoad={() => setImgLoaded(true)}
         />
-        <span className="absolute top-2 left-2 bg-green-700 text-white text-xs font-semibold px-3 py-2 rounded-full">
+        <span
+          className={`absolute top-2 left-2 bg-white text-xs px-3 py-2 rounded-full text-green-600`}
+        >
           {room.status || "Avaliable"}
         </span>
       </div>
-      <div className="p-4 flex flex-col flex-1">
-        <h2 className="text-lg text-gray-800">{room.type}</h2>
-        <h2 className="text-base text-gray-800">{room.roomNo}</h2>
-        <h2 className="text-base text-gray-800 mb-3">One Night For {room.price}</h2>
-        <div className="mt-auto">
-          <Link to={`/rooms/${room.roomNo}`}>
-            <button className="w-full bg-blue-900 hover:bg-blue-800 cursor-pointer text-white py-2 px-4 rounded-lg">
-              View Details
+      <div className="p-4">
+        <h2 className="text-lg font-semibold">{room.type}</h2>
+        {/* <h2 className="text-base text-gray-500">{room.roomNo}</h2> */}
+
+        <div className="flex justify-between mt-3">
+          <div>
+            <p className="text-base text-gray-500 text-sm">Start From</p>
+            <div>
+              <span className="text-lg font-semibold">${room.price}</span>
+              <span className="text-base text-gray-500 text-sm">/Night</span>
+            </div>
+          </div>
+          <Link to={`/rooms/${room.roomNo}`} className="self-end">
+            <button className="text-sm w-full bg-pink-400 hover:bg-pink-500 cursor-pointer text-white py-2 px-4 rounded-full">
+              Book Now
             </button>
           </Link>
         </div>
