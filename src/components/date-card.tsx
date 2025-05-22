@@ -27,7 +27,7 @@ export default function DateCard({ label }: Props) {
     }
 
     return (
-        <CardContainer>
+        <CardContainer className="h-[100px] md:h-auto">
             <section className="flex flex-col justify-center space-y-2">
                 <h3 className="text-sm md:text-[1em] font-medium">{label}</h3>
                 <p className="text-xs text-muted-foreground">{getDateText()}</p>

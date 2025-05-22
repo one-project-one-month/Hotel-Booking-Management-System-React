@@ -1,10 +1,12 @@
+import ProfileImg from "../assets/profile.jpg";
+
 interface User {
     userName: string,
     email: string,
     phoneNo: string,
     userPoint: number,
     coupons: number,
-    profileImg: string| undefined,
+    profileImg: string,
     totalAmount: number,
     totalBooking: number,
 }
@@ -15,7 +17,7 @@ export const user: User = {
     phoneNo: "09234567890",
     userPoint: 1200,
     coupons: 5,
-    profileImg: undefined,
+    profileImg: ProfileImg,
     totalAmount: 3400,
     totalBooking: 32,
 }
