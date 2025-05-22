@@ -8,9 +8,9 @@ export default function Room({ room }: { room: Room }) {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
-    <div className="bg-[#f0f0f0] rounded-2xl shadow-md overflow-hidden hover:shadow-lg">
+    <div className="bg-[#f0f0f0] rounded-2xl shadow-md overflow-hidden hover:shadow-lg flex flex-col">
       <div className="relative h-60">
-        {!imgLoaded && <Skeleton className="w-full h-full"/>}
+        {!imgLoaded && <Skeleton className="w-full h-full" />}
         <img
           src={room.imgUrl[Math.floor(Math.random() * room.imgUrl.length)]}
           alt="Room Image"
@@ -21,21 +21,20 @@ export default function Room({ room }: { room: Room }) {
           onLoad={() => setImgLoaded(true)}
         />
         <span className="absolute top-2 left-2 bg-green-700 text-white text-xs font-semibold px-3 py-2 rounded-full">
-          {room.status}
+          {room.status || "Avaliable"}
         </span>
       </div>
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         <h2 className="text-lg text-gray-800">{room.type}</h2>
         <h2 className="text-base text-gray-800">{room.roomNo}</h2>
-        <h2 className="text-base text-gray-800">One Night For {room.price}</h2>
-        <p className="text-gray-600 mt-2 min-h-[50px] text-sm">
-          {room.details.description}
-        </p>
-        <Link to={`/rooms/${room.roomNo}`}>
-          <button className="mt-4 w-full bg-blue-900 hover:bg-blue-800 cursor-pointer text-white py-2 px-4 rounded-lg">
-            View Details
-          </button>
-        </Link>
+        <h2 className="text-base text-gray-800 mb-3">One Night For {room.price}</h2>
+        <div className="mt-auto">
+          <Link to={`/rooms/${room.roomNo}`}>
+            <button className="w-full bg-blue-900 hover:bg-blue-800 cursor-pointer text-white py-2 px-4 rounded-lg">
+              View Details
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );

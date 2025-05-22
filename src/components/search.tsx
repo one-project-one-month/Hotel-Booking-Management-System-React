@@ -10,7 +10,6 @@ import CardContainer from "@/components/card-container"
 import GuestCount from "./guest-count"
 import { Separator } from "@/components/ui/separator"
 
-
 export default function Search() {
     const [activePopover, setActivePopover] = useState<string | null>(null)
     const [isFocused, setIsFocused] = useState(false)
