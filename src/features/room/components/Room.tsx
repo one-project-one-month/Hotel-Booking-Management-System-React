@@ -32,10 +32,10 @@ export default function Room({ room }: { room: Room }) {
 
         <div className="flex justify-between mt-3">
           <div>
-            <p className="text-base text-gray-500 text-sm">Start From</p>
+            <p className=" text-gray-500 text-sm">Start From</p>
             <div>
               <span className="text-lg font-semibold">${room.price}</span>
-              <span className="text-base text-gray-500 text-sm">/Night</span>
+              <span className="text-gray-500 text-sm">/Night</span>
             </div>
           </div>
           <Link to={`/rooms/${room.roomNo}`} className="self-end">

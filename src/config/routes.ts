@@ -11,6 +11,7 @@ import BookingHistory from '@/features/profile/booking_history';
 import Coupon from '@/features/profile/coupon';
 import WishLists from '@/features/profile/wish_lists';
 import Receipt from '@/features/profile/receipt';
+import RoomCheckout from "@/features/room/room-checkout";
 
 const routes = [
   {
@@ -26,6 +27,7 @@ const routes = [
       },
       { path: "/rooms", Component: Room },
       { path: "/rooms/:roomNo", Component: RoomDetail },
+      { path: "/rooms/checkout/:roomNo", Component: RoomCheckout },
       { path: "/bookings", Component: Booking },
       {
         Component: ProfileNavigation,
