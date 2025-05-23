@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
-type GuestType = "adults" | "children" | "infants" | "pets";
+export type GuestType = "adults" | "children" | "infants" | "pets";
 
-interface GuestCount {
+export interface GuestCount {
   adults: number;
   children: number;
   infants: number;
