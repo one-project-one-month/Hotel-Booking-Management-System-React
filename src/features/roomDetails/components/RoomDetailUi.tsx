@@ -6,6 +6,7 @@ import RoomAmenities from "./RoomAmenities";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
+import ReviewContainer from "./ReviewContainer";
 
 export default function RoomDetailUi({
   currentRoom,
@@ -41,6 +42,7 @@ export default function RoomDetailUi({
           </Link>
         </section>
       </div>
+      <ReviewContainer />
     </div>
   );
 }
