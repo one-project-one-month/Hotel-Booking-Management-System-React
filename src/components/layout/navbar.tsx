@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/assets/logo.jpg";
 
 import NavMenus from "@/components/layout/components/nav-menus";
+import ChatAssistant from "@/features/chat-assistant";
 
 const Navbar: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const Navbar: React.FC = () => {
         </section>
       </nav>
       <Outlet />
+      <ChatAssistant />
     </>
   );
 };
