@@ -1,21 +1,30 @@
-import { rooms } from "@/mock/rooms.ts";
 import RoomCarousel from "./components/RoomCarousel";
 import { useFetchRooms } from "@/api/services/rooms";
+import { filterRoomsByType, getFeaturedRooms } from "./utils";
+import Loading from "@/components/loading";
 
 export default function Home() {
-  const {data: featuredRooms, error} = useFetchRooms()
-  const standardRooms = rooms.filter((room) => room.type === "Standard");
-  const deluxeRooms = rooms.filter((room) => room.type === "Deluxe");
+  const { data: rooms = [], isLoading } = useFetchRooms()
+  const featuredRooms = getFeaturedRooms(rooms);
+  const deluxeRooms = filterRoomsByType(rooms, "Deluxe");
+  const standardRooms = filterRoomsByType(rooms, "Standard");
 
-  console.log("Rooms", featuredRooms)
-  console.log("Error", error)
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh] rounded-full">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <>
-      {/* <RoomCarousel
+      <RoomCarousel
         isFeatured={true}
         roomData={featuredRooms ?? []}
         title={"Our Popular Rooms"}
-      /> */}
+
+      />
       <RoomCarousel
         isFeatured={false}
         roomData={deluxeRooms}

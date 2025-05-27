@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import CarouselSkeleton from "./CarouselSkeleton";
 import { Link } from "react-router";
+import type { RoomDescription } from "@/types/rooms";
 type RoomCardProps = {
   room: Room;
 };
@@ -20,34 +21,17 @@ type CarouselProps = {
   title: string;
 };
 
-// function createRoomResource() {
-//   let status = "pending";
-//   let result: Room[] | undefined;
-//   const suspender = new Promise<void>((resolve) => {
-//     setTimeout(async () => {
-//       const mod = await import("@/mock/rooms");
-//       result = mod.rooms;
-//       status = "success";
-//       resolve();
-//     }, 1000); // 3 second delay
-//   });
-
-//   return {
-//     read() {
-//       if (status === "pending") {
-//         throw suspender;
-//       }
-//       return result!;
-//     },
-//   };
-// }
 
 // Room Card
 function PopularRoomCard({ room }: RoomCardProps) {
-  const imgUrl = room.imgUrl[0];
+  const imgUrl = (typeof room.imgUrl === 'string' ? JSON.parse(room.imgUrl) : room.imgUrl as string[])[0];
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [fav, setFav] = useState(false);
+  const details: RoomDescription = typeof room.details === 'string'
+    ? JSON.parse(room.details)
+    : room.details as RoomDescription;
+  const title = details.title;
 
   return (
     <div className="relative max-w-60 h-fit">
@@ -91,7 +75,7 @@ function PopularRoomCard({ room }: RoomCardProps) {
           </div>
         )}
       </div>
-      <p>{room.details.title}</p>
+      <p>{title}</p>
       <p className="text-gray-500 text-xs">
         ${room.price} for night,
         {room.guestLimit === 1
@@ -101,25 +85,7 @@ function PopularRoomCard({ room }: RoomCardProps) {
     </div>
   );
 }
-// const roomResource = createRoomResource();
 
-// function PopularRoomCarouselContent() {
-//   const roomData = roomResource.read();
-//   return (
-//     <>
-//       {roomData.map((room) => (
-//         <CarouselItem
-//           key={room.roomNo}
-//           className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
-//         >
-//           <PopularRoomCard room={room} />
-//         </CarouselItem>
-//       ))}
-//     </>
-//   );
-// }
-
-//Carousel
 export default function RoomCarousel({
   roomData,
   isFeatured,

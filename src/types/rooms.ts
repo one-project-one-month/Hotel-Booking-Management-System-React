@@ -1,4 +1,4 @@
-type RoomDescription = {
+export type RoomDescription = {
     bedSize: "Single" | "Double" | "Queen" | "King";
     title: string;
     description: string;
