@@ -6,8 +6,9 @@ import RoomCard from "./room-card";
 import QuickSuggestion from "./quick-suggestion";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-
+import { useRequestRoomSuggestion } from "@/api/services/chatAssistant";
 export default function DreamStayChatUI() {
+  const { mutate: requestRoomSuggestion, isPending } = useRequestRoomSuggestion();
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -53,30 +54,31 @@ export default function DreamStayChatUI() {
     setIsTyping(true);
 
     // Simulate AI response
-    setTimeout(() => {
-      let response = "";
-      if (inputValue.toLowerCase().includes('luxury') || inputValue.toLowerCase().includes('suite')) {
-        response = "Here are our premium luxury suites available for your dates. Each features world-class amenities and stunning views:";
-      } else if (inputValue.toLowerCase().includes('family')) {
-        response = "Perfect! I found some wonderful family-friendly accommodations. These rooms offer extra space and amenities for families:";
-      } else if (inputValue.toLowerCase().includes('weekend') || inputValue.toLowerCase().includes('availability')) {
-        response = "Great news! We have excellent availability this weekend. Here are some fantastic options:";
-      } else if (inputValue.toLowerCase().includes('rate') || inputValue.toLowerCase().includes('price')) {
-        response = "I've found our best value rooms for this month. These offer excellent rates without compromising on comfort:";
-      } else {
-        response = "Based on your preferences, I've curated these excellent room options for you:";
-      }
-
-      const aiResponse = {
+    requestRoomSuggestion(
+      { query: inputValue },
+      {
+      onSuccess: (data) => {
+        const aiResponse = {
         id: messages.length + 2,
-        text: response,
+        text: data?.response || "Sorry, I couldn't find any suggestions at the moment.",
         isUser: false,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1500);
+        };
+        setMessages(prev => [...prev, aiResponse]);
+        setIsTyping(false);
+      },
+      onError: () => {
+        const aiResponse = {
+        id: messages.length + 2,
+        text: "Sorry, something went wrong. Please try again.",
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, aiResponse]);
+        setIsTyping(false);
+      }
+      }
+    );
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -197,7 +199,7 @@ export default function DreamStayChatUI() {
             </div>
             <Button
               onClick={handleSendMessage}
-              disabled={!inputValue.trim()}
+              disabled={!inputValue.trim() && isPending}
               className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 disabled:from-gray-300 disabled:to-gray-300 text-white p-3 rounded-xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center shadow-sm hover:shadow-md"
             >
               <Send size={18} />
