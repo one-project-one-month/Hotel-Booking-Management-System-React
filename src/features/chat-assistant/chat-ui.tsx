@@ -1,4 +1,3 @@
-import { rooms } from "@/mock/rooms";
 import { Bot, Calendar, Send, Sparkles, Star, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ChatMessage from "./chat-message";
@@ -6,8 +5,18 @@ import RoomCard from "./room-card";
 import QuickSuggestion from "./quick-suggestion";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import type { RoomQueryStrategy } from "./service/RoomService";
+import { getRoomStrategy } from "./utils/getRoomStrategy";
+import type { Room } from "@/types/room";
 
 export default function DreamStayChatUI() {
+  // Toggle between using mock data and real API responses.
+  // Set `isMock` to true during development or testing to simulate API responses
+  // without making real network requests. This is useful for faster iteration and 
+  // save token . Set to false in production to use real api.
+  const IS_MOCK: boolean = true
+  const strategy: RoomQueryStrategy = getRoomStrategy(IS_MOCK);
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -16,7 +25,10 @@ export default function DreamStayChatUI() {
       timestamp: "Just now"
     }
   ]);
-  const [inputValue, setInputValue] = useState('');
+
+  const [roomData, setRoomData] = useState<Room[]>([]);
+
+  const [inputValue, setInputValue] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -25,11 +37,12 @@ export default function DreamStayChatUI() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const sampleRooms = rooms.slice(0, 3)
 
   const quickSuggestions = [
     { text: "Show luxury suites", icon: Sparkles },
@@ -52,31 +65,32 @@ export default function DreamStayChatUI() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      let response = "";
-      if (inputValue.toLowerCase().includes('luxury') || inputValue.toLowerCase().includes('suite')) {
-        response = "Here are our premium luxury suites available for your dates. Each features world-class amenities and stunning views:";
-      } else if (inputValue.toLowerCase().includes('family')) {
-        response = "Perfect! I found some wonderful family-friendly accommodations. These rooms offer extra space and amenities for families:";
-      } else if (inputValue.toLowerCase().includes('weekend') || inputValue.toLowerCase().includes('availability')) {
-        response = "Great news! We have excellent availability this weekend. Here are some fantastic options:";
-      } else if (inputValue.toLowerCase().includes('rate') || inputValue.toLowerCase().includes('price')) {
-        response = "I've found our best value rooms for this month. These offer excellent rates without compromising on comfort:";
-      } else {
-        response = "Based on your preferences, I've curated these excellent room options for you:";
-      }
-
-      const aiResponse = {
-        id: messages.length + 2,
-        text: response,
-        isUser: false,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      setMessages(prev => [...prev, aiResponse]);
+    try {
+      const reply = await strategy.generateSearchQuery(inputValue);
+      const rooms = await strategy.findRooms(reply);
+      setRoomData(rooms);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: reply,
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ])
       setIsTyping(false);
-    }, 1500);
+    } catch (error) {
+      console.error('Error fetching room suggestion:', error);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: "Sorry, I couldn't fetch suggestions right now.",
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -123,13 +137,13 @@ export default function DreamStayChatUI() {
               timestamp={message.timestamp}
             />
           ))}
-          
-          {/* Sample Room Cards */}
-          {messages.length > 2 && (
-            <div className="mb-6">
-              <div className="grid gap-3 md:grid-cols-2">
-                {sampleRooms.map((room, index) => (
-                  <RoomCard key={index} room={room} />
+
+          {roomData.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Available Rooms</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {roomData.map((room) => (
+                  <RoomCard key={room.roomNo} room={room} />
                 ))}
               </div>
             </div>
@@ -150,7 +164,7 @@ export default function DreamStayChatUI() {
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -184,7 +198,7 @@ export default function DreamStayChatUI() {
                 placeholder="Ask about rooms, amenities, or availability..."
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none min-h-[48px] max-h-32"
                 rows={1}
-                style={{ 
+                style={{
                   height: 'auto',
                   minHeight: '48px'
                 }}
