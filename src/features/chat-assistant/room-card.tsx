@@ -10,7 +10,12 @@ export default function RoomCard({ room }: RoomCardProps) {
     return (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 mb-3">
             <div className="h-32 bg-gradient-to-br from-amber-100 to-orange-100 relative">
-                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                <img
+                    src={room.imgUrl[0]}
+                    alt={`Room ${room.roomNo}`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+                
                 <div className="absolute bottom-2 left-2 text-white font-semibold text-sm">
                     {room.roomNo}
                 </div>
