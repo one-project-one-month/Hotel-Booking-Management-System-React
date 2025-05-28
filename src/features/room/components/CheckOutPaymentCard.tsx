@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useContext, useState, type FormEvent } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -9,14 +9,50 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "@/components/ui/button";
+import type { Room } from "@/types/rooms";
+import { UserInputContext } from "@/context/UserInputContext";
+import { intervalToDuration } from "date-fns";
+import { createBooking, type BookingPayload } from "@/api/queries/booking";
+import { toast } from "sonner";
 
-function CheckOutPaymentCard() {
+type CheckOutPaymentCardProps = {
+  roomData: Room;
+};
+
+function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
+  const context = useContext(UserInputContext);
+  if (!context || !context.inputData) {
+    throw new Error(
+      "UserInputContext must be used within a UserInputContextProvider"
+    );
+  }
+  const { inputData } = context;
+  const checkInDate = inputData.checkIn
+    ? new Date(inputData.checkIn)
+    : new Date();
+  const checkOutDate = inputData.checkOut
+    ? new Date(inputData.checkOut)
+    : undefined;
+  // Calculate duration and total cost
+  const { days: duration = 0 } =
+    checkInDate && checkOutDate
+      ? intervalToDuration({ start: checkInDate, end: checkOutDate })
+      : { days: 0 };
+  const guestCount = inputData.guestCount.adults;
+  const totalCost = duration && roomData.price * duration;
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const formValues = Object.fromEntries(formData);
-    console.log(formValues);
+    const payload: BookingPayload = {
+      userId: "3dd80c5c-cc5f-4fed-9691-32aa502ddaa",
+      roomId: roomData.id,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+      guestCount,
+      totalAmount: totalCost,
+    };
+    const result = createBooking(payload);
+    console.log(result);
   };
   return (
     <div className="border rounded-lg min-w-100  p-8 ">
@@ -39,7 +75,7 @@ function CheckOutPaymentCard() {
             <RadioGroup defaultValue="option-one">
               <div className="flex items-center justify-between space-x-2">
                 <Label className="font-light" htmlFor="option-one">
-                  Pay $284.18 SGD now
+                  Pay ${totalCost} SGD now
                 </Label>
                 <RadioGroupItem value="option-one" id="option-one" />
               </div>
@@ -49,8 +85,8 @@ function CheckOutPaymentCard() {
                   <p className="flex flex-col gap-4">
                     Pay part now, part later
                     <span className="block max-w-[300px] text-xs text-wrap text-gray-500">
-                      $56.84 SGD now, $227.34 SGD charged on 14 Aug. No extra
-                      fees.
+                      ${totalCost * 0.25} SGD now, ${totalCost} SGD charged on
+                      14 Aug. No extra fees.
                     </span>
                   </p>
                 </Label>
@@ -100,7 +136,12 @@ function CheckOutPaymentCard() {
                 />
               </div>
               <div className="flex justify-end mt-4">
-                <Button className="px-4 py-2 rounded transition">Pay</Button>
+                <Button
+                  className="px-4 py-2 rounded transition"
+                  onClick={() => toast("Booking has been successfully placed")}
+                >
+                  Pay
+                </Button>
               </div>
             </form>
           </AccordionContent>

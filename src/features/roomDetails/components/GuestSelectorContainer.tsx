@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import GuestSelector from "./GuestSelector";
 
@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { UserInputContext } from "@/context/UserInputContext";
 
 export type GuestType = "adults" | "children" | "infants" | "pets";
 
@@ -21,13 +22,14 @@ export interface GuestCount {
 
 export default function GuestSelectorContainer() {
   const [isGuestSelectorOpen, setIsGuestSelectorOpen] = useState(false);
-
-  const [guestCount, setGuestCount] = useState<GuestCount>({
-    adults: 1,
-    children: 0,
-    infants: 0,
-    pets: 0,
-  });
+  const context = useContext(UserInputContext);
+  if (!context || !context.setInputData) {
+    throw new Error(
+      "UserInputContext must be used within a UserInputContextProvider"
+    );
+  }
+  const { inputData, setInputData } = context;
+  const guestCount = inputData.guestCount;
 
   const totalGuests = guestCount.adults + guestCount.children;
 
@@ -37,22 +39,22 @@ export default function GuestSelectorContainer() {
   };
 
   const handleGuestChange = (type: GuestType, increment: boolean) => {
-    setGuestCount((prev) => {
-      const newCount = { ...prev };
-
+    setInputData((prev) => {
+      const newCount = { ...prev.guestCount };
       if (increment) {
-        // Maximum 3 guests (adults + children)
-        if ((type === "adults" || type === "children") && totalGuests >= 3) {
+        if (
+          (type === "adults" || type === "children") &&
+          newCount.adults + newCount.children >= 3
+        ) {
           return prev;
         }
         newCount[type] += 1;
       } else {
-        if (type === "adults" && prev.adults <= 1) return prev;
-        if (prev[type] <= 0) return prev;
+        if (type === "adults" && newCount.adults <= 1) return prev;
+        if (newCount[type] <= 0) return prev;
         newCount[type] -= 1;
       }
-
-      return newCount;
+      return { ...prev, guestCount: newCount };
     });
   };
   return (

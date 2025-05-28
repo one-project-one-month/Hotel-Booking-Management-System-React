@@ -1,5 +1,6 @@
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -9,34 +10,41 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { useState, type Dispatch } from "react";
+import { useState, useContext } from "react";
 import type { DateRange } from "react-day-picker";
 import GuestSelectorContent from "./GuestSelectorContent";
+import { UserInputContext } from "@/context/UserInputContext";
 
-type SelectorDialogProps = {
-  checkInDate: Date;
-  checkOutDate: Date;
-  setCheckInDate: Dispatch<React.SetStateAction<Date>>;
-  setCheckOutDate: Dispatch<React.SetStateAction<Date>>;
-};
+function SelectorDialog() {
+  const context = useContext(UserInputContext);
+  if (!context || !context.inputData || !context.setInputData) {
+    throw new Error(
+      "UserInputContext must be used within a UserInputContextProvider"
+    );
+  }
+  const { inputData, setInputData } = context;
 
-function SelectorDialog({
-  checkInDate,
-  checkOutDate,
-  setCheckInDate,
-  setCheckOutDate,
-}: SelectorDialogProps) {
+  const checkInDate = inputData.checkIn
+    ? new Date(inputData.checkIn)
+    : undefined;
+  const checkOutDate = inputData.checkOut
+    ? new Date(inputData.checkOut)
+    : undefined;
+
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: checkInDate,
     to: checkOutDate,
   });
+
   const setDate = (range: DateRange | undefined) => {
     setDateRange(range);
-    if (range?.from && range.to) {
-      setCheckInDate(range.from);
-      setCheckOutDate(range.to);
-    }
+    setInputData((prev) => ({
+      ...prev,
+      checkIn: range?.from ?? "",
+      checkOut: range?.to ?? "",
+    }));
   };
+
   return (
     <Dialog>
       <DialogTrigger className="border bg-gray-200 hover:bg-gray-300 cursor-pointer text-xs py-1 px-3 rounded-md absolute top-0 right-0">
@@ -72,10 +80,23 @@ function SelectorDialog({
               className="rounded-md  flex"
             />
             <div className="flex justify-between">
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setDateRange(undefined);
+                  setInputData((prev) => ({
+                    ...prev,
+                    checkIn: "",
+                    checkOut: "",
+                  }));
+                }}
+              >
                 Clear dates
               </Button>
-              <Button size="sm">Done</Button>
+              <DialogClose>
+                <Button size="sm">Done</Button>
+              </DialogClose>
             </div>
           </TabsContent>
           <TabsContent value="guests">
