@@ -26,7 +26,7 @@ const routes = [
         ],
       },
       { path: "/rooms", Component: Room },
-      { path: "/rooms/:roomNo", Component: RoomDetail },
+      { path: "/rooms/:roomId", Component: RoomDetail },
       { path: "/rooms/checkout/:roomNo", Component: RoomCheckout },
       { path: "/bookings", Component: Booking },
       {

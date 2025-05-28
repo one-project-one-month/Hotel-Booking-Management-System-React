@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { type Room } from "@/mock/rooms";
+import { type Room } from "@/types/rooms";
 import { Heart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -107,7 +107,7 @@ export default function RoomCarousel({
                 key={room.roomNo}
                 className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
               >
-                <Link to={`/rooms/${room.roomNo}`}>
+                <Link to={`/rooms/${room.id}`}>
                   <PopularRoomCard room={room} />
                 </Link>
               </CarouselItem>

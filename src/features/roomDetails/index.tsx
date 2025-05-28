@@ -1,14 +1,14 @@
 import { useParams } from "react-router";
-import { rooms } from "@/mock/rooms";
 import RoomDetailUi from "./components/RoomDetailUi";
+import { useFetchRoomById } from "@/api/services/rooms";
 
 export default function RoomDetail() {
-  const { roomNo } = useParams();
-  const currentRoom = rooms.find((room) => room.roomNo == Number(roomNo));
-
+  const { roomId } = useParams();
+  const { data: room, isLoading } = useFetchRoomById(roomId!);
+  console.log("room", room);
   return (
     <div className="container mx-auto mt-8">
-      <RoomDetailUi currentRoom={currentRoom} />
+      {room && <RoomDetailUi currentRoom={room} />}
     </div>
   );
 }

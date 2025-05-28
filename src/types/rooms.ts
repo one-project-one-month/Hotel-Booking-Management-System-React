@@ -6,6 +6,7 @@ export type RoomDescription = {
 };
 
 export interface Room {
+    id: string
     roomNo: number;
     type: "Deluxe" | "Standard";
     price: number;
