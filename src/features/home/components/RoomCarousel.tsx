@@ -12,6 +12,7 @@ import {
 import CarouselSkeleton from "./CarouselSkeleton";
 import { Link } from "react-router";
 import type { RoomDescription } from "@/types/rooms";
+import { Button } from "@/components/ui/button";
 type RoomCardProps = {
   room: Room;
 };
@@ -19,6 +20,7 @@ type CarouselProps = {
   roomData: Room[];
   isFeatured: boolean;
   title: string;
+  roomType?: string;
 };
 
 
@@ -35,8 +37,9 @@ function PopularRoomCard({ room }: RoomCardProps) {
 
   return (
     <div className="relative max-w-60 h-fit">
-      <button
-        className="absolute right-2 top-2 w-[10%] max-w-8"
+      <Button
+        variant="ghost"
+        className="absolute right-2 top-2 w-[10%] max-w-8 cursor-pointer"
         onClick={() => setFav((fav) => !fav)}
       >
         <Heart
@@ -45,7 +48,7 @@ function PopularRoomCard({ room }: RoomCardProps) {
           className=" transition-colors"
           strokeWidth={2}
         />
-      </button>
+      </Button>
       <div
         className="w-full h-40 border bg-center bg-no-repeat bg-cover rounded-lg"
         style={{
@@ -90,6 +93,7 @@ export default function RoomCarousel({
   roomData,
   isFeatured,
   title,
+  roomType
 }: CarouselProps) {
   return (
     <>
@@ -107,7 +111,7 @@ export default function RoomCarousel({
                 key={room.roomNo}
                 className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
               >
-                <Link to={`/rooms/${room.id}`}>
+                <Link to={`/room/details/${room.id}`}>
                   <PopularRoomCard room={room} />
                 </Link>
               </CarouselItem>
@@ -126,12 +130,12 @@ export default function RoomCarousel({
 
         {!isFeatured && (
           <div className="absolute -top-6 right-0">
-            <a
-              href=""
+            <Link
+              to={`/rooms/${roomType}`}
               className=" underline text-pink-600 hover:text-pink-700 focus:text-pink-700 text-sm"
             >
               See More...
-            </a>
+            </Link>
           </div>
         )}
       </Carousel>

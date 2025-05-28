@@ -10,6 +10,7 @@ export interface Room {
     roomNo: number;
     type: "Deluxe" | "Standard";
     price: number;
+    status: string
     isFeatured: boolean;
     details: RoomDescription;
     imgUrl: string[];

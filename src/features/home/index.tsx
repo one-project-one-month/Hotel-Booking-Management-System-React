@@ -29,11 +29,13 @@ export default function Home() {
         isFeatured={false}
         roomData={deluxeRooms}
         title={"Our Luxury Rooms"}
+        roomType="Deluxe"
       />
       <RoomCarousel
         isFeatured={false}
         roomData={standardRooms}
         title={"Standard Rooms"}
+        roomType="Standard"
       />
     </>
   );

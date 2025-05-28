@@ -25,8 +25,8 @@ const routes = [
           { index: true, Component: Home },
         ],
       },
-      { path: "/rooms", Component: Room },
-      { path: "/rooms/:roomId", Component: RoomDetail },
+      { path: "/rooms/:type", Component: Room },
+      { path: "/room/details/:roomId", Component: RoomDetail },
       { path: "/rooms/checkout/:roomNo", Component: RoomCheckout },
       { path: "/bookings", Component: Booking },
       {
