@@ -10,7 +10,6 @@ export const filterRoomsByType = (rooms: Room[], type: "Deluxe" | "Standard") =>
     return rooms.filter((room) => room.type === type);
 }
 
-
 export function addRoomToFavorites(room: Room) {
     let favs: Room[] = [];
     const stored = localStorage.getItem(FAVS_KEY);

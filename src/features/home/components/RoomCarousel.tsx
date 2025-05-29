@@ -18,6 +18,7 @@ import { addRoomToFavorites, isRoomInFavorites, removeRoomFromFavorites } from "
 type RoomCardProps = {
   room: Room;
 };
+
 type CarouselProps = {
   roomData: Room[];
   isFeatured: boolean;
@@ -29,7 +30,9 @@ function PopularRoomCard({ room }: RoomCardProps) {
   const imgUrl = (typeof room.imgUrl === 'string' ? JSON.parse(room.imgUrl) : room.imgUrl as string[])[0];
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
+
   const [fav, setFav] = useState(() => isRoomInFavorites(room.id));
+
   const details: RoomDescription = typeof room.details === 'string'
     ? JSON.parse(room.details)
     : room.details as RoomDescription;
@@ -156,8 +159,6 @@ export default function RoomCarousel({
             ))}
           </Suspense>
         </CarouselContent>
-
-
       </Carousel>
     </>
   );
