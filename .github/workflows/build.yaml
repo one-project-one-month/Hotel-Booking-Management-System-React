@@ -1,0 +1,39 @@
+name: CI Build Pipeline
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - dev
+      - feat/*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code into runner
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache node_modules and Vite
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            .vite
+          key: ${{ github.sha }}-node-vite
+          restore-keys: |
+            ${{ github.sha }}-node-vite
+
+      - run: npm ci
+
+      - name: Build the application
+        run: npm run build
