@@ -1,38 +1,33 @@
-import GuestSelector from "@/features/roomDetails/components/GuestSelector";
-import type {
-  GuestCount,
-  GuestType,
-} from "@/features/roomDetails/components/GuestSelectorContainer";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import type { UserInput } from "@/context/UserInputContext";
+import type { GuestCount, GuestType } from "./GuestSelectorContainer";
+import GuestSelector from "./GuestSelector";
 
-function GuestSelectorContent() {
-  const [guestCount, setGuestCount] = useState<GuestCount>({
-    adults: 1,
-    children: 0,
-    infants: 0,
-    pets: 0,
-  });
+type GuestSelectorConentProps = {
+  guestCount: GuestCount;
+  setInputData: React.Dispatch<React.SetStateAction<UserInput>>;
+};
 
-  const totalGuests = guestCount.adults + guestCount.children;
-
+function GuestSelectorConent({
+  guestCount,
+  setInputData,
+}: GuestSelectorConentProps) {
   const handleGuestChange = (type: GuestType, increment: boolean) => {
-    setGuestCount((prev) => {
-      const newCount = { ...prev };
-
+    setInputData((prev) => {
+      const newCount = { ...prev.guestCount };
       if (increment) {
-        // Maximum 3 guests (adults + children)
-        if ((type === "adults" || type === "children") && totalGuests >= 3) {
+        if (
+          (type === "adults" || type === "children") &&
+          newCount.adults + newCount.children >= 3
+        ) {
           return prev;
         }
         newCount[type] += 1;
       } else {
-        if (type === "adults" && prev.adults <= 1) return prev;
-        if (prev[type] <= 0) return prev;
+        if (type === "adults" && newCount.adults <= 1) return prev;
+        if (newCount[type] <= 0) return prev;
         newCount[type] -= 1;
       }
-
-      return newCount;
+      return { ...prev, guestCount: newCount };
     });
   };
   return (
@@ -77,11 +72,7 @@ function GuestSelectorContent() {
         This place has a maximum of 3 guests, not including infants. Pets aren't
         allowed.
       </p>
-
-      <div className="flex justify-end">
-        <Button size="sm">Done</Button>
-      </div>
     </div>
   );
 }
-export default GuestSelectorContent;
+export default GuestSelectorConent;

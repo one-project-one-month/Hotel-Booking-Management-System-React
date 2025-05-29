@@ -10,20 +10,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import type { DateRange } from "react-day-picker";
-import GuestSelectorContent from "./GuestSelectorContent";
-import { UserInputContext } from "@/context/UserInputContext";
+
+import useUserInputContext from "@/hooks/useUserInputContext";
+import GuestSelectorConent from "@/features/roomDetails/components/GuestSelectorConent";
 
 function SelectorDialog() {
-  const context = useContext(UserInputContext);
-  if (!context || !context.inputData || !context.setInputData) {
-    throw new Error(
-      "UserInputContext must be used within a UserInputContextProvider"
-    );
-  }
-  const { inputData, setInputData } = context;
-
+  const { inputData, setInputData } = useUserInputContext();
+  const guestCount = inputData.guestCount;
   const checkInDate = inputData.checkIn
     ? new Date(inputData.checkIn)
     : undefined;
@@ -100,7 +95,15 @@ function SelectorDialog() {
             </div>
           </TabsContent>
           <TabsContent value="guests">
-            <GuestSelectorContent />
+            <GuestSelectorConent
+              guestCount={guestCount}
+              setInputData={setInputData}
+            />
+            <DialogClose className="flex w-full">
+              <Button className="ml-auto" size="sm">
+                Done
+              </Button>
+            </DialogClose>
           </TabsContent>
         </Tabs>
       </DialogContent>

@@ -1,3 +1,4 @@
+import type { GuestCount } from "@/features/roomDetails/components/GuestSelectorContainer";
 import {
   createContext,
   useEffect,
@@ -6,21 +7,14 @@ import {
   type SetStateAction,
 } from "react";
 
-type GuestCount = {
-  adults: number;
-  children: number;
-  infants: number;
-  pets: number;
-};
-
-type UserInput = {
+export type UserInput = {
   checkIn: Date | "";
   checkOut: Date | "";
   guestCount: GuestCount;
 };
 type ProviderProps = {
   inputData: UserInput;
-  setInputData?: Dispatch<SetStateAction<UserInput>>;
+  setInputData: Dispatch<SetStateAction<UserInput>>;
 };
 
 const UserInputContext = createContext<ProviderProps | undefined>(undefined);

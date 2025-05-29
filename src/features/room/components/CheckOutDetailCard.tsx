@@ -1,25 +1,18 @@
 import { type Room } from "@/mock/rooms";
-import { useContext } from "react";
-import { UserInputContext } from "@/context/UserInputContext";
 import { BedSingle, Star } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
 import { format, getMonth, intervalToDuration } from "date-fns";
 
 import SelectorDialog from "./SelectorDialog";
 import ImgContainer from "./ImgContainer";
+import useUserInputContext from "@/hooks/useUserInputContext";
 
 type CheckOutDetailCardProps = {
   roomData: Room;
 };
 
 function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
-  const context = useContext(UserInputContext);
-  if (!context || !context.inputData) {
-    throw new Error(
-      "UserInputContext must be used within a UserInputContextProvider"
-    );
-  }
-  const { inputData } = context;
+  const { inputData } = useUserInputContext();
 
   const checkInDate = inputData.checkIn
     ? new Date(inputData.checkIn)

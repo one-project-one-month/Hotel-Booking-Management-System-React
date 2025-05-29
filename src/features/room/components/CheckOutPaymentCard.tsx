@@ -1,4 +1,4 @@
-import { useContext, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -10,23 +10,18 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "@/components/ui/button";
 import type { Room } from "@/types/rooms";
-import { UserInputContext } from "@/context/UserInputContext";
 import { intervalToDuration } from "date-fns";
 import { createBooking, type BookingPayload } from "@/api/queries/booking";
 import { toast } from "sonner";
+import useUserInputContext from "@/hooks/useUserInputContext";
 
 type CheckOutPaymentCardProps = {
   roomData: Room;
 };
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
-  const context = useContext(UserInputContext);
-  if (!context || !context.inputData) {
-    throw new Error(
-      "UserInputContext must be used within a UserInputContextProvider"
-    );
-  }
-  const { inputData } = context;
+  const { inputData } = useUserInputContext();
+
   const checkInDate = inputData.checkIn
     ? new Date(inputData.checkIn)
     : new Date();
