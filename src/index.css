@@ -1,6 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -74,6 +74,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --success: oklch(0.461 0.277 142.87);
+  --success-foreground: oklch(1 0 0);
 }
 
 .dark {
@@ -108,13 +111,39 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: 'Poppins', sans-serif;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
   }
+}
+
+[data-sonner-toast][data-type="success"] {
+  background-color: #F2F2F2 !important;
+  color: #E53888 !important;
+  border-left: 4px solid #E53888 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: #E53888 !important;
+}
+
+/* Optional class-based usage */
+.success-toast {
+  background-color: #F2F2F2 !important;
+  color: #E53888 !important;
+  border-left: 4px solid #E53888 !important;
+}
+
+.success-toast [data-icon] {
+  color: #E53888 !important;
 }

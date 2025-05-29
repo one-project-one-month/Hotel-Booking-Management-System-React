@@ -1,29 +1,30 @@
 import { useState } from "react";
 import { Link } from "react-router";
 
-import type { Room } from "@/mock/rooms.ts";
+import type { Room } from "@/types/rooms.ts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 export default function Room({ room }: { room: Room }) {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const imgUrl = (typeof room.imgUrl === 'string' ? JSON.parse(room.imgUrl) : room.imgUrl as string[])[0];
 
   return (
     <div className="rounded-2xl overflow-hidden hover:shadow-md">
       <div className="relative h-60">
         {!imgLoaded && <Skeleton className="w-full h-full" />}
         <img
-          src={room.imgUrl[Math.floor(Math.random() * room.imgUrl.length)]}
+          src={imgUrl}
           alt="Room Image"
           loading="lazy"
-          className={`w-full h-full object-cover transition-opacity duration-500 ${
-            imgLoaded ? "opacity-100" : "opacity-0 absolute"
-          }`}
+          className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0 absolute"
+            }`}
           onLoad={() => setImgLoaded(true)}
         />
         <span
-          className={`absolute top-2 left-2 bg-white text-xs px-3 py-2 rounded-full text-green-600`}
+          className={`absolute top-2 capitalize left-2 bg-white text-xs px-3 py-2 rounded-full text-green-600`}
         >
-          {room.status || "Avaliable"}
+          {room.status}
         </span>
       </div>
       <div className="p-4">
@@ -38,10 +39,10 @@ export default function Room({ room }: { room: Room }) {
               <span className="text-gray-500 text-sm">/Night</span>
             </div>
           </div>
-          <Link to={`/rooms/${room.roomNo}`} className="self-end">
-            <button className="text-sm w-full bg-pink-400 hover:bg-pink-500 cursor-pointer text-white py-2 px-4 rounded-full">
+          <Link to={`/room/details/${room.id}`} className="self-end">
+            <Button className="text-sm w-full bg-pink-400 hover:bg-pink-500 cursor-pointer text-white py-2 px-4 rounded-full">
               Book Now
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
