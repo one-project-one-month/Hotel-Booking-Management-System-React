@@ -21,10 +21,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
 
-      - name: Install dependencies
-        run: npm install
+      - name: Cache node_modules and Vite
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            .vite
+          key: ${{ github.sha }}-node-vite
+          restore-keys: |
+            ${{ github.sha }}-node-vite
+
+      - run: npm ci
 
       - name: Build the application
         run: npm run build
