@@ -6,7 +6,6 @@ if (!API_URL) {
     throw new Error('VITE_BACKEND_API_URL is not defined');
 }
 
-
 interface ApiResponse<T> {
     data: T;
 }

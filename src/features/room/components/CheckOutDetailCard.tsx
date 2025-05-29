@@ -1,33 +1,58 @@
 import { type Room } from "@/mock/rooms";
-import { useState } from "react";
 import { BedSingle, Star } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
 import { format, getMonth, intervalToDuration } from "date-fns";
 
 import SelectorDialog from "./SelectorDialog";
 import ImgContainer from "./ImgContainer";
+import useUserInputContext from "@/hooks/useUserInputContext";
+
 type CheckOutDetailCardProps = {
   roomData: Room;
 };
 
 function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
-  const [checkInDate, setCheckInDate] = useState<Date>(
-    new Date("June 4, 2025 03:24:00")
-  );
-  const [checkOutDate, setCheckOutDate] = useState<Date>(
-    new Date("June 7, 2025 03:24:00")
-  );
+  const { inputData } = useUserInputContext();
+
+  const checkInDate = inputData.checkIn
+    ? new Date(inputData.checkIn)
+    : undefined;
+  const checkOutDate = inputData.checkOut
+    ? new Date(inputData.checkOut)
+    : undefined;
+
+  const detailsStr =
+    typeof roomData.details === "string"
+      ? roomData.details
+      : JSON.stringify(roomData.details);
+  const detailsObj = JSON.parse(detailsStr);
+  const amenities = detailsObj.amenities.length > 0 ? detailsObj.amenities : [];
+  const title = detailsObj.title;
+  const imgUrls =
+    typeof roomData.imgUrl === "string"
+      ? JSON.parse(roomData.imgUrl)
+      : (roomData.imgUrl as string[]);
+  const imgUrl = imgUrls[0];
+
+  // Format dates
   const formattedCheckIn =
-    getMonth(checkInDate) === getMonth(checkOutDate)
-      ? format(checkInDate, "dd")
-      : format(checkInDate, "dd MMM");
-  const formattedCheckOut = format(checkOutDate, "dd MMM yyyy");
-  const { days: duration } = intervalToDuration({
-    start: checkInDate,
-    end: checkOutDate,
-  });
+    checkInDate && checkOutDate
+      ? getMonth(checkInDate) === getMonth(checkOutDate)
+        ? format(checkInDate, "dd")
+        : format(checkInDate, "dd MMM")
+      : "";
+  const formattedCheckOut = checkOutDate
+    ? format(checkOutDate, "dd MMM yyyy")
+    : "";
+
+  // Calculate duration and total cost
+  const { days: duration = 0 } =
+    checkInDate && checkOutDate
+      ? intervalToDuration({ start: checkInDate, end: checkOutDate })
+      : { days: 0 };
+
   const totalCost = duration && roomData.price * duration;
-  const imgUrl = roomData.imgUrl[0];
+
   return (
     <div className="border rounded-lg w-100 grid p-8">
       <div>
@@ -36,9 +61,7 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
           <div className="grid items-center">
             <div className="flex items-center gap-2">
               <Star size={40} />
-              <h3 className=" font-semibold text-wrap">
-                {roomData.details.title}
-              </h3>
+              <h3 className=" font-semibold text-wrap">{title}</h3>
             </div>
             <div className="flex gap-2">
               <BedSingle />
@@ -46,7 +69,7 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
                 className="w-[200px] text-sm font-semibold text-nowrap overflow-ellipsis"
                 style={{ overflow: "hidden" }}
               >
-                {roomData.details.amenities.map((item, i) => {
+                {amenities.map((item: string, i: number) => {
                   if (i === 0) {
                     return item;
                   }
@@ -63,13 +86,10 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
         <p className=" font-extralight text-sm">
           {formattedCheckIn} - {formattedCheckOut}
         </p>
-        <p className=" font-extralight text-sm">1 adult</p>
-        <SelectorDialog
-          checkInDate={checkInDate}
-          setCheckInDate={setCheckInDate}
-          checkOutDate={checkOutDate}
-          setCheckOutDate={setCheckOutDate}
-        />
+        <p className=" font-extralight text-sm">
+          {inputData.guestCount.adults} adult
+        </p>
+        <SelectorDialog />
         <Separator className="bg-border -mx-1 my-1 h-px" />
       </div>
       <div className="mt-4 ">

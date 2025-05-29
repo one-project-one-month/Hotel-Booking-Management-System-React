@@ -3,6 +3,7 @@ import CheckOutPaymentCard from "./components/CheckOutPaymentCard";
 import CheckOutDetailCard from "./components/CheckOutDetailCard";
 import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
+
 export default function RoomCheckout() {
   const location = useLocation();
   const roomData = location.state?.roomData;
@@ -17,7 +18,7 @@ export default function RoomCheckout() {
         >
           <MoveLeft size={20} />
         </Button>
-        <CheckOutPaymentCard />
+        <CheckOutPaymentCard roomData={roomData} />
         <CheckOutDetailCard roomData={roomData} />
       </div>
     </>

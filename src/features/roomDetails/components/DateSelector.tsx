@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -7,13 +7,27 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { UserInputContext } from "@/context/UserInputContext";
+
 export default function DateSelector() {
-  const [checkInDate, setCheckInDate] = useState<Date | undefined>(undefined);
-  const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarFocus, setCalendarFocus] = useState<"checkin" | "checkout">(
     "checkin"
   );
+  const context = useContext(UserInputContext);
+  if (!context || !context.setInputData) {
+    throw new Error(
+      "UserInputContext must be used within a UserInputContextProvider"
+    );
+  }
+  const { inputData, setInputData } = context;
+  // Use checkInDate and checkOutDate directly from context
+  const checkInDate = inputData.checkIn
+    ? new Date(inputData.checkIn)
+    : undefined;
+  const checkOutDate = inputData.checkOut
+    ? new Date(inputData.checkOut)
+    : undefined;
 
   const formatDateOrPlaceholder = (
     date: Date | undefined,
@@ -59,7 +73,15 @@ export default function DateSelector() {
                   mode="single"
                   selected={checkInDate}
                   onSelect={(date) => {
-                    setCheckInDate(date);
+                    setInputData((prev) => ({
+                      ...prev,
+                      checkIn: date ?? "",
+                      // Optionally clear checkOut if it's before new checkIn
+                      checkOut:
+                        prev.checkOut && date && new Date(prev.checkOut) <= date
+                          ? ""
+                          : prev.checkOut,
+                    }));
                     setCalendarFocus("checkout");
                   }}
                   numberOfMonths={2}
@@ -71,8 +93,11 @@ export default function DateSelector() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setCheckInDate(undefined);
-                      setCheckOutDate(undefined);
+                      setInputData((prev) => ({
+                        ...prev,
+                        checkIn: "",
+                        checkOut: "",
+                      }));
                     }}
                   >
                     Clear dates
@@ -122,7 +147,10 @@ export default function DateSelector() {
                   mode="single"
                   selected={checkOutDate}
                   onSelect={(date) => {
-                    setCheckOutDate(date);
+                    setInputData((prev) => ({
+                      ...prev,
+                      checkOut: date ?? "",
+                    }));
                     setCalendarOpen(false);
                   }}
                   numberOfMonths={2}
@@ -139,8 +167,11 @@ export default function DateSelector() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setCheckInDate(undefined);
-                      setCheckOutDate(undefined);
+                      setInputData((prev) => ({
+                        ...prev,
+                        checkIn: "",
+                        checkOut: "",
+                      }));
                     }}
                   >
                     Clear dates
