@@ -12,7 +12,7 @@ export default function RoomCard({ room }: RoomCardProps) {
             <div className="h-32 bg-gradient-to-br from-amber-100 to-orange-100 relative">
                 <img
                     src={room.imgUrl[0]}
-                    alt={`Room ${room.roomNo}`}
+                    alt={`Room ${room.roomNo.toString()}`}
                     className="absolute inset-0 w-full h-full object-cover"
                 />
                 

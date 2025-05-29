@@ -1,4 +1,4 @@
-export type RoomDescription = {
+export interface RoomDescription {
     bedSize: "Single" | "Double" | "Queen" | "King";
     title: string;
     description: string;

@@ -21,7 +21,7 @@ export default function Home() {
     <>
       <RoomCarousel
         isFeatured={true}
-        roomData={featuredRooms ?? []}
+        roomData={featuredRooms}
         title={"Our Popular Rooms"}
 
       />

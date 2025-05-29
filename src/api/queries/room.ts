@@ -1,14 +1,22 @@
+import type { Room } from '@/types/rooms';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_BACKEND_API_URL;
+const API_URL: string = import.meta.env.VITE_BACKEND_API_URL as string;
+if (!API_URL) {
+    throw new Error('VITE_BACKEND_API_URL is not defined');
+}
 
 
-export async function fetchRooms() {
-    const response = await axios.get(`${API_URL}/room`);
+interface ApiResponse<T> {
+    data: T;
+}
+
+export async function fetchRooms(): Promise<Room[]> {
+    const response = await axios.get<ApiResponse<Room[]>>(`${API_URL}/room`);
     return response.data.data;
 }
 
-export async function fetchRoomById(roomId: string) {
-    const response = await axios.get(`${API_URL}/room/${roomId}`);
+export async function fetchRoomById(roomId: string): Promise<Room> {
+    const response = await axios.get<ApiResponse<Room>>(`${API_URL}/room/${roomId}`);
     return response.data.data;
 }

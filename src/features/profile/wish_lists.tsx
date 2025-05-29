@@ -8,7 +8,9 @@ import { Link } from 'react-router'
 export default function WishLists() {
   const favRooms = localStorage.getItem(FAVS_KEY);
   const hasWishList = favRooms !== null;
-  const wishList: Room[] = hasWishList ? JSON.parse(favRooms as string) : [];
+  const wishList: Room[] = hasWishList
+    ? Array.isArray(JSON.parse(favRooms)) ? JSON.parse(favRooms) as Room[] : []
+    : [];
   return (
     <>
       {hasWishList ? (

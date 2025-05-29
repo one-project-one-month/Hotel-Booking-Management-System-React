@@ -15,22 +15,22 @@ export function addRoomToFavorites(room: Room) {
     let favs: Room[] = [];
     const stored = localStorage.getItem(FAVS_KEY);
     if (stored) {
-        favs = JSON.parse(stored);
+        favs = JSON.parse(stored) as Room[];
     }
     // Avoid duplicates by room id
     if (!favs.some((r) => r.id === room.id)) {
         favs.push(room);
         localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
         toast.success("Added to favorites!")
-        return true; // Return true if actually added
+        return true;
     }
-    return false; // Return false if already exists
+    return false; 
 }
 
 export function removeRoomFromFavorites(room: Room) {
     const stored = localStorage.getItem(FAVS_KEY);
     if (stored) {
-        let favs: Room[] = JSON.parse(stored);
+        let favs: Room[] = JSON.parse(stored) as Room[];
         const initialLength = favs.length;
         favs = favs.filter((r) => r.id !== room.id);
 
@@ -47,7 +47,7 @@ export function removeRoomFromFavorites(room: Room) {
 export function isRoomInFavorites(roomId: string): boolean {
     const stored = localStorage.getItem("favoriteRooms");
     if (stored) {
-        const favs: Room[] = JSON.parse(stored);
+        const favs: Room[] = JSON.parse(stored) as Room[];
         return favs.some((r) => r.id === roomId);
     }
     return false;

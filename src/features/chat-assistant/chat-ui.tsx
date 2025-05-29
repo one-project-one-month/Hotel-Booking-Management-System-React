@@ -14,7 +14,7 @@ export default function DreamStayChatUI() {
   // Set `isMock` to true during development or testing to simulate API responses
   // without making real network requests. This is useful for faster iteration and 
   // save token . Set to false in production to use real api.
-  const IS_MOCK: boolean = true
+  const IS_MOCK = true
   const strategy: RoomQueryStrategy = getRoomStrategy(IS_MOCK);
 
   const [messages, setMessages] = useState([
@@ -101,7 +101,7 @@ export default function DreamStayChatUI() {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      void handleSendMessage();
     }
   };
 
@@ -193,7 +193,7 @@ export default function DreamStayChatUI() {
               <Textarea
                 ref={inputRef}
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => { setInputValue(e.target.value); }}
                 onKeyDown={handleKeyPress}
                 placeholder="Ask about rooms, amenities, or availability..."
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none min-h-[48px] max-h-32"
@@ -205,12 +205,12 @@ export default function DreamStayChatUI() {
                 onInput={(e) => {
                   const textarea = e.target as HTMLTextAreaElement;
                   textarea.style.height = 'auto';
-                  textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
+                  textarea.style.height = `${String(Math.min(textarea.scrollHeight, 128))}px`;
                 }}
               />
             </div>
             <Button
-              onClick={handleSendMessage}
+              onClick={() => { void handleSendMessage()}}
               disabled={!inputValue.trim()}
               className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 disabled:from-gray-300 disabled:to-gray-300 text-white p-3 rounded-xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center shadow-sm hover:shadow-md"
             >
