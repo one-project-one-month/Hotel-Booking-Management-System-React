@@ -1,4 +1,3 @@
-import { rooms } from "@/mock/rooms";
 import { Bot, Calendar, Send, Sparkles, Star, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ChatMessage from "./chat-message";
@@ -6,9 +5,18 @@ import RoomCard from "./room-card";
 import QuickSuggestion from "./quick-suggestion";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useRequestRoomSuggestion } from "@/api/services/chatAssistant";
+import type { RoomQueryStrategy } from "./service/RoomService";
+import { getRoomStrategy } from "./utils/getRoomStrategy";
+import type { Room } from "@/types/room";
+
 export default function DreamStayChatUI() {
-  const { mutate: requestRoomSuggestion, isPending } = useRequestRoomSuggestion();
+  // Toggle between using mock data and real API responses.
+  // Set `isMock` to true during development or testing to simulate API responses
+  // without making real network requests. This is useful for faster iteration and 
+  // save token . Set to false in production to use real api.
+  const IS_MOCK = true
+  const strategy: RoomQueryStrategy = getRoomStrategy(IS_MOCK);
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -17,7 +25,10 @@ export default function DreamStayChatUI() {
       timestamp: "Just now"
     }
   ]);
-  const [inputValue, setInputValue] = useState('');
+
+  const [roomData, setRoomData] = useState<Room[]>([]);
+
+  const [inputValue, setInputValue] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -26,11 +37,12 @@ export default function DreamStayChatUI() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const sampleRooms = rooms.slice(0, 3)
 
   const quickSuggestions = [
     { text: "Show luxury suites", icon: Sparkles },
@@ -53,32 +65,32 @@ export default function DreamStayChatUI() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
-    requestRoomSuggestion(
-      { query: inputValue },
-      {
-      onSuccess: (data) => {
-        const aiResponse = {
-        id: messages.length + 2,
-        text: data?.response || "Sorry, I couldn't find any suggestions at the moment.",
-        isUser: false,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        setMessages(prev => [...prev, aiResponse]);
-        setIsTyping(false);
-      },
-      onError: () => {
-        const aiResponse = {
-        id: messages.length + 2,
-        text: "Sorry, something went wrong. Please try again.",
-        isUser: false,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        setMessages(prev => [...prev, aiResponse]);
-        setIsTyping(false);
-      }
-      }
-    );
+    try {
+      const reply = await strategy.generateSearchQuery(inputValue);
+      const rooms = await strategy.findRooms(reply);
+      setRoomData(rooms);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: reply,
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ])
+      setIsTyping(false);
+    } catch (error) {
+      console.error('Error fetching room suggestion:', error);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: "Sorry, I couldn't fetch suggestions right now.",
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -89,7 +101,7 @@ export default function DreamStayChatUI() {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      void handleSendMessage();
     }
   };
 
@@ -125,13 +137,13 @@ export default function DreamStayChatUI() {
               timestamp={message.timestamp}
             />
           ))}
-          
-          {/* Sample Room Cards */}
-          {messages.length > 2 && (
-            <div className="mb-6">
-              <div className="grid gap-3 md:grid-cols-2">
-                {sampleRooms.map((room, index) => (
-                  <RoomCard key={index} room={room} />
+
+          {roomData.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Available Rooms</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {roomData.map((room) => (
+                  <RoomCard key={room.roomNo} room={room} />
                 ))}
               </div>
             </div>
@@ -152,7 +164,7 @@ export default function DreamStayChatUI() {
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -181,25 +193,25 @@ export default function DreamStayChatUI() {
               <Textarea
                 ref={inputRef}
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => { setInputValue(e.target.value); }}
                 onKeyDown={handleKeyPress}
                 placeholder="Ask about rooms, amenities, or availability..."
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none min-h-[48px] max-h-32"
                 rows={1}
-                style={{ 
+                style={{
                   height: 'auto',
                   minHeight: '48px'
                 }}
                 onInput={(e) => {
                   const textarea = e.target as HTMLTextAreaElement;
                   textarea.style.height = 'auto';
-                  textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
+                  textarea.style.height = `${String(Math.min(textarea.scrollHeight, 128))}px`;
                 }}
               />
             </div>
             <Button
-              onClick={handleSendMessage}
-              disabled={!inputValue.trim() && isPending}
+              onClick={() => { void handleSendMessage()}}
+              disabled={!inputValue.trim()}
               className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 disabled:from-gray-300 disabled:to-gray-300 text-white p-3 rounded-xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center shadow-sm hover:shadow-md"
             >
               <Send size={18} />

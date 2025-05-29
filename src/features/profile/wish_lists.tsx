@@ -1,8 +1,36 @@
 import NoWishList from '@/assets/empty wishlist.png'
 import { Button } from '@/components/ui/button'
+import { FAVS_KEY } from '@/config/constants';
+import type { Room } from '@/types/rooms';
+import FavRoom from '@/features/room/components/Room'
 import { Link } from 'react-router'
 
 export default function WishLists() {
+  const favRooms = localStorage.getItem(FAVS_KEY);
+  const hasWishList = favRooms !== null;
+  const wishList: Room[] = hasWishList
+    ? Array.isArray(JSON.parse(favRooms)) ? JSON.parse(favRooms) as Room[] : []
+    : [];
+  return (
+    <>
+      {hasWishList ? (
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-2">
+          {wishList.map((room) => (
+            <div key={room.id} >
+              <Link to={`/room/details/${room.id}`}>
+                <FavRoom room={room} />
+              </Link>
+            </div>
+
+          ))}
+        </div>
+      ) : (
+        <WishListEmpty />)}
+    </>
+  )
+}
+
+function WishListEmpty() {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center p-6">
       <img src={NoWishList} alt="No Coupons" className="w-48 mb-6" />

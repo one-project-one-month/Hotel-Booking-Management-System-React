@@ -1,0 +1,1 @@
+export const FAVS_KEY = "favoriteRooms";

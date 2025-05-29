@@ -7,20 +7,16 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import ReviewContainer from "./ReviewContainer";
-import { type Key } from "react";
+import type { Key } from "react";
 
-export default function RoomDetailUi({ currentRoom }: { currentRoom: Room }) {
-  const detailsStr =
-    typeof currentRoom.details === "string"
-      ? currentRoom.details
-      : JSON.stringify(currentRoom.details);
-  const amenities = Array.isArray(JSON.parse(detailsStr)?.amenities)
-    ? JSON.parse(detailsStr).amenities
-    : [];
-  const imgUrls =
-    typeof currentRoom.imgUrl === "string"
-      ? JSON.parse(currentRoom.imgUrl)
-      : (currentRoom.imgUrl as string[]);
+export default function RoomDetailUi({
+  currentRoom,
+}: {
+  currentRoom: Room;
+}) {
+  const detailsStr = typeof currentRoom.details === "string" ? currentRoom.details : JSON.stringify(currentRoom.details);
+  const amenities = Array.isArray((JSON.parse(detailsStr)?.amenities)) ? JSON.parse(detailsStr).amenities : [];
+  const imgUrls = (typeof currentRoom.imgUrl === 'string' ? JSON.parse(currentRoom.imgUrl) : currentRoom.imgUrl as string[]);
 
   if (!currentRoom) {
     return <h1>Room Not Found</h1>;
