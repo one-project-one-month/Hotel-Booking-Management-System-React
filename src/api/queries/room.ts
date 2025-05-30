@@ -1,3 +1,4 @@
+import type { ApiResponse } from '@/types/api-response';
 import type { Room } from '@/types/rooms';
 import axios from 'axios';
 
@@ -6,9 +7,6 @@ if (!API_URL) {
     throw new Error('VITE_BACKEND_API_URL is not defined');
 }
 
-interface ApiResponse<T> {
-    data: T;
-}
 
 export async function fetchRooms(): Promise<Room[]> {
     const response = await axios.get<ApiResponse<Room[]>>(`${API_URL}/room`);

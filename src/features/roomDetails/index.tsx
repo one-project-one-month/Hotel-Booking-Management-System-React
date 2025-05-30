@@ -5,7 +5,16 @@ import Loading from "@/components/loading";
 
 export default function RoomDetail() {
   const { roomId } = useParams();
-  const { data: room, isLoading } = useFetchRoomById(roomId!);
+
+  if (!roomId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Room ID is missing.</p>
+      </div>
+    );
+  }
+
+  const { data: room, isLoading } = useFetchRoomById(roomId);
 
   if (isLoading) {
     return (

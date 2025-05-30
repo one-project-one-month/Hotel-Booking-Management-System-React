@@ -17,14 +17,8 @@ import useUserInputContext from "@/hooks/useUserInputContext";
 import GuestSelectorConent from "@/features/roomDetails/components/GuestSelectorConent";
 
 function SelectorDialog() {
-  const { inputData, setInputData } = useUserInputContext();
-  const guestCount = inputData.guestCount;
-  const checkInDate = inputData.checkIn
-    ? new Date(inputData.checkIn)
-    : undefined;
-  const checkOutDate = inputData.checkOut
-    ? new Date(inputData.checkOut)
-    : undefined;
+  const { checkInDate, checkOutDate, guestCount, setCheckIn, setCheckOut} = useUserInputContext();
+
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: checkInDate,
@@ -33,11 +27,8 @@ function SelectorDialog() {
 
   const setDate = (range: DateRange | undefined) => {
     setDateRange(range);
-    setInputData((prev) => ({
-      ...prev,
-      checkIn: range?.from ?? "",
-      checkOut: range?.to ?? "",
-    }));
+    setCheckIn(range?.from);
+    setCheckOut(range?.to);
   };
 
   return (
@@ -80,11 +71,8 @@ function SelectorDialog() {
                 size="sm"
                 onClick={() => {
                   setDateRange(undefined);
-                  setInputData((prev) => ({
-                    ...prev,
-                    checkIn: "",
-                    checkOut: "",
-                  }));
+                  setCheckIn(undefined);
+                  setCheckOut(undefined);
                 }}
               >
                 Clear dates
@@ -97,7 +85,10 @@ function SelectorDialog() {
           <TabsContent value="guests">
             <GuestSelectorConent
               guestCount={guestCount}
-              setInputData={setInputData}
+              setInputData={(data: { checkInDate?: Date; checkOutDate?: Date; guestCount?: number }) => {
+                setCheckIn(data.checkInDate);
+                setCheckOut(data.checkOutDate);
+              }}
             />
             <DialogClose className="flex w-full">
               <Button className="ml-auto" size="sm">

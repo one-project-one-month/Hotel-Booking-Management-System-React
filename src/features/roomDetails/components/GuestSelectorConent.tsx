@@ -1,8 +1,8 @@
 import type { UserInput } from "@/context/UserInputContext";
-import type { GuestCount, GuestType } from "./GuestSelectorContainer";
+import type { GuestCount, GuestType } from "@/types/booking";
 import GuestSelector from "./GuestSelector";
 
-type GuestSelectorConentProps = {
+interface GuestSelectorConentProps {
   guestCount: GuestCount;
   setInputData: React.Dispatch<React.SetStateAction<UserInput>>;
 };
@@ -16,7 +16,7 @@ function GuestSelectorConent({
       const newCount = { ...prev.guestCount };
       if (increment) {
         if (
-          (type === "adults" || type === "children") &&
+          (type === "adults") &&
           newCount.adults + newCount.children >= 3
         ) {
           return prev;
@@ -36,36 +36,16 @@ function GuestSelectorConent({
         title="Adults"
         subtitle="Age 13+"
         count={guestCount.adults}
-        onIncrement={() => handleGuestChange("adults", true)}
-        onDecrement={() => handleGuestChange("adults", false)}
+        onIncrement={() => { handleGuestChange("adults", true); }}
+        onDecrement={() => { handleGuestChange("adults", false); }}
       />
 
       <GuestSelector
         title="Children"
         subtitle="Ages 2–12"
         count={guestCount.children}
-        onIncrement={() => handleGuestChange("children", true)}
-        onDecrement={() => handleGuestChange("children", false)}
-      />
-
-      <GuestSelector
-        title="Infants"
-        subtitle="Under 2"
-        count={guestCount.infants}
-        onIncrement={() => handleGuestChange("infants", true)}
-        onDecrement={() => handleGuestChange("infants", false)}
-      />
-
-      <GuestSelector
-        title="Pets"
-        subtitle={
-          <a href="#" className="underline">
-            Bringing a service animal?
-          </a>
-        }
-        count={guestCount.pets}
-        onIncrement={() => handleGuestChange("pets", true)}
-        onDecrement={() => handleGuestChange("pets", false)}
+        onIncrement={() => { handleGuestChange("children", true); }}
+        onDecrement={() => { handleGuestChange("children", false); }}
       />
 
       <p className="text-sm">

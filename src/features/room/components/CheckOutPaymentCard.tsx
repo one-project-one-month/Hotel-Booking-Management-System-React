@@ -9,41 +9,39 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "@/components/ui/button";
-import type { Room } from "@/types/rooms";
 import { intervalToDuration } from "date-fns";
 import { createBooking, type BookingPayload } from "@/api/queries/booking";
 import { toast } from "sonner";
 import useUserInputContext from "@/hooks/useUserInputContext";
+import type { Room } from "@/types/rooms";
 
-type CheckOutPaymentCardProps = {
+interface CheckOutPaymentCardProps {
   roomData: Room;
 };
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
-  const { inputData } = useUserInputContext();
+  const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
 
-  const checkInDate = inputData.checkIn
-    ? new Date(inputData.checkIn)
-    : new Date();
-  const checkOutDate = inputData.checkOut
-    ? new Date(inputData.checkOut)
-    : undefined;
   // Calculate duration and total cost
   const { days: duration = 0 } =
     checkInDate && checkOutDate
       ? intervalToDuration({ start: checkInDate, end: checkOutDate })
       : { days: 0 };
-  const guestCount = inputData.guestCount.adults;
+  const adultsCount = guestCount.adults;
   const totalCost = duration && roomData.price * duration;
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!checkInDate) {
+      toast("Check-in date is required.");
+      return;
+    }
     const payload: BookingPayload = {
       userId: "3dd80c5c-cc5f-4fed-9691-32aa502ddaa",
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      guestCount,
+      guestCount: adultsCount,
       totalAmount: totalCost,
     };
     const result = createBooking(payload);
@@ -91,7 +89,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
             <div className="flex justify-end mt-4">
               <Button
                 className="px-4 py-2 rounded transition"
-                onClick={() => setOpenItem("item-2")}
+                onClick={() => { setOpenItem("item-2"); }}
                 type="button"
               >
                 Next

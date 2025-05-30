@@ -1,4 +1,3 @@
-import { type Room } from "@/mock/rooms";
 import { BedSingle, Star } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
 import { format, getMonth, intervalToDuration } from "date-fns";
@@ -6,32 +5,27 @@ import { format, getMonth, intervalToDuration } from "date-fns";
 import SelectorDialog from "./SelectorDialog";
 import ImgContainer from "./ImgContainer";
 import useUserInputContext from "@/hooks/useUserInputContext";
+import type { Room, RoomDescription } from "@/types/rooms";
 
-type CheckOutDetailCardProps = {
+interface CheckOutDetailCardProps {
   roomData: Room;
 };
 
 function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
-  const { inputData } = useUserInputContext();
-
-  const checkInDate = inputData.checkIn
-    ? new Date(inputData.checkIn)
-    : undefined;
-  const checkOutDate = inputData.checkOut
-    ? new Date(inputData.checkOut)
-    : undefined;
+  const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
 
   const detailsStr =
     typeof roomData.details === "string"
       ? roomData.details
       : JSON.stringify(roomData.details);
-  const detailsObj = JSON.parse(detailsStr);
+      
+  const detailsObj = JSON.parse(detailsStr) as RoomDescription;
   const amenities = detailsObj.amenities.length > 0 ? detailsObj.amenities : [];
   const title = detailsObj.title;
-  const imgUrls =
+  const imgUrls: string[] =
     typeof roomData.imgUrl === "string"
-      ? JSON.parse(roomData.imgUrl)
-      : (roomData.imgUrl as string[]);
+      ? (JSON.parse(roomData.imgUrl) as string[])
+      : roomData.imgUrl;
   const imgUrl = imgUrls[0];
 
   // Format dates
@@ -87,7 +81,7 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
           {formattedCheckIn} - {formattedCheckOut}
         </p>
         <p className=" font-extralight text-sm">
-          {inputData.guestCount.adults} adult
+          {guestCount.adults} adult
         </p>
         <SelectorDialog />
         <Separator className="bg-border -mx-1 my-1 h-px" />

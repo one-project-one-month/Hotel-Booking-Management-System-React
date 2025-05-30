@@ -1,23 +1,26 @@
-import type { GuestCount } from "@/features/roomDetails/components/GuestSelectorContainer";
+import type { GuestCount } from "@/types/booking";
 import {
   createContext,
-  useEffect,
   useState,
   type Dispatch,
   type SetStateAction,
 } from "react";
 
-export type UserInput = {
-  checkIn: Date | "";
-  checkOut: Date | "";
+// Add maxGuestCount to UserInput interface to control the maximum number of guests
+export interface UserInput {
+  checkIn: Date | undefined;
+  checkOut: Date | undefined;
   guestCount: GuestCount;
+  maxGuestCount: number
 };
-type ProviderProps = {
+
+interface ProviderProps {
   inputData: UserInput;
   setInputData: Dispatch<SetStateAction<UserInput>>;
 };
 
-const UserInputContext = createContext<ProviderProps | undefined>(undefined);
+// name changed from UserInputContext to BookingContext since this context is used for booking-related data
+const BookingContext =  createContext<ProviderProps | undefined>(undefined);
 
 const UserInputContextProvider = ({
   children,
@@ -25,23 +28,19 @@ const UserInputContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [inputData, setInputData] = useState<UserInput>({
-    checkIn: "",
-    checkOut: "",
+    checkIn: undefined,
+    checkOut: undefined,
     guestCount: {
       adults: 0,
       children: 0,
-      infants: 0,
-      pets: 0,
     },
+    maxGuestCount: 0,
   });
-  useEffect(() => {
-    console.log(inputData);
-  }, [inputData]);
   return (
-    <UserInputContext.Provider value={{ inputData, setInputData }}>
+    <BookingContext.Provider value={{ inputData, setInputData }}>
       {children}
-    </UserInputContext.Provider>
+    </BookingContext.Provider>
   );
 };
 
-export { UserInputContext, UserInputContextProvider };
+export { BookingContext, UserInputContextProvider };
