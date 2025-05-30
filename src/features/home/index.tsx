@@ -2,6 +2,7 @@ import RoomCarousel from "./components/RoomCarousel";
 import { useFetchRooms } from "@/api/services/rooms";
 import { filterRoomsByType, getFeaturedRooms } from "./utils";
 import Loading from "@/components/loading";
+import Footer from "./components/Footer";
 
 export default function Home() {
   const { data: rooms = [], isLoading } = useFetchRooms()
@@ -37,6 +38,7 @@ export default function Home() {
         title={"Standard Rooms"}
         roomType="Standard"
       />
+      <Footer/>
     </>
   );
 }
