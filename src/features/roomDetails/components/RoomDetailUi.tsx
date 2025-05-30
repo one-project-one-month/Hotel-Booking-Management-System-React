@@ -41,7 +41,7 @@ export default function RoomDetailUi({
         <section className="space-y-4">
           <Picker />
 
-          <Button className="w-full text-lg py-7 rounded-full cursor-pointer shadow-lg bg-rose-500 hover:bg-rose-600 text-white">
+          <Button className="w-full text-lg py-7 rounded-full cursor-pointer shadow-lg bg-rose-400 hover:bg-rose-500 text-white">
             <Link
               to={`/rooms/checkout/${currentRoom.roomNo}`}
               state={{ roomData: currentRoom }}
