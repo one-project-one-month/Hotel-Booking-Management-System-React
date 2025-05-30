@@ -10,16 +10,23 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "@/components/ui/button";
 import { intervalToDuration } from "date-fns";
-import { createBooking, type BookingPayload } from "@/api/queries/booking";
+import { type BookingPayload } from "@/api/queries/booking";
 import { toast } from "sonner";
 import useUserInputContext from "@/hooks/useUserInputContext";
 import type { Room } from "@/types/rooms";
+import { useMutation } from "@tanstack/react-query";
+import { useCreateBookingOption } from "@/api/services/booking";
 
 interface CheckOutPaymentCardProps {
   roomData: Room;
-};
+}
+
+const DEPOSIT_PERCENT = 0.25;
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
+  const { mutate: createBookingMutation } = useMutation(
+    useCreateBookingOption()
+  );
   const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
 
   // Calculate duration and total cost
@@ -27,28 +34,27 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
     checkInDate && checkOutDate
       ? intervalToDuration({ start: checkInDate, end: checkOutDate })
       : { days: 0 };
-  const adultsCount = guestCount.adults;
+  const totalGuest = guestCount.adults + guestCount.children;
   const totalCost = duration && roomData.price * duration;
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!checkInDate) {
-      toast("Check-in date is required.");
+      toast.error("Check-in date is required.");
       return;
     }
     const payload: BookingPayload = {
-      userId: "3dd80c5c-cc5f-4fed-9691-32aa502ddaa",
+      userId: "3dd80c5c-cc5f-4fed-9691-32aa502ddaa5",
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      guestCount: adultsCount,
+      guestCount: totalGuest,
       totalAmount: totalCost,
     };
-    const result = createBooking(payload);
-    console.log(result);
+    createBookingMutation(payload);
   };
   return (
-    <div className="border rounded-lg min-w-100  p-8 ">
+    <div className="border rounded-lg min-w-[450px]  p-8 ">
       <h3 className=" font-bold text-lg mb-4">Comfirm and Pay</h3>
       <Accordion
         className="flex flex-col gap-8"
@@ -78,8 +84,8 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
                   <p className="flex flex-col gap-4">
                     Pay part now, part later
                     <span className="block max-w-[300px] text-xs text-wrap text-gray-500">
-                      ${totalCost * 0.25} SGD now, ${totalCost} SGD charged on
-                      14 Aug. No extra fees.
+                      ${totalCost * DEPOSIT_PERCENT} SGD now, ${totalCost} SGD
+                      charged on 14 Aug. No extra fees.
                     </span>
                   </p>
                 </Label>
@@ -89,7 +95,9 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
             <div className="flex justify-end mt-4">
               <Button
                 className="px-4 py-2 rounded transition"
-                onClick={() => { setOpenItem("item-2"); }}
+                onClick={() => {
+                  setOpenItem("item-2");
+                }}
                 type="button"
               >
                 Next
@@ -129,12 +137,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
                 />
               </div>
               <div className="flex justify-end mt-4">
-                <Button
-                  className="px-4 py-2 rounded transition"
-                  onClick={() => toast("Booking has been successfully placed")}
-                >
-                  Pay
-                </Button>
+                <Button className="px-4 py-2 rounded transition">Pay</Button>
               </div>
             </form>
           </AccordionContent>

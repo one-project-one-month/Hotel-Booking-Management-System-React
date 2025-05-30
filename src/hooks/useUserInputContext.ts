@@ -10,7 +10,7 @@ function useUserInputContext() {
     }
     
     const { inputData, setInputData } = context;
-
+    
     const setCheckIn = (date: Date | undefined) => {
         setInputData((prev) => ({ ...prev, checkIn: date }));
     };

@@ -17,8 +17,14 @@ import useUserInputContext from "@/hooks/useUserInputContext";
 import GuestSelectorConent from "@/features/roomDetails/components/GuestSelectorConent";
 
 function SelectorDialog() {
-  const { checkInDate, checkOutDate, guestCount, setCheckIn, setCheckOut} = useUserInputContext();
-
+  const {
+    checkInDate,
+    checkOutDate,
+    guestCount,
+    setCheckIn,
+    setCheckOut,
+    setGuestCount,
+  } = useUserInputContext();
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: checkInDate,
@@ -41,7 +47,7 @@ function SelectorDialog() {
           <DialogTitle>Change reservation details</DialogTitle>
           <DialogDescription>Change reservation date</DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="account" className="">
+        <Tabs defaultValue="calendar" className="">
           <TabsList className=" flex self-center p-0">
             <TabsTrigger
               className="w-full h-full border p-4 m-0"
@@ -85,10 +91,7 @@ function SelectorDialog() {
           <TabsContent value="guests">
             <GuestSelectorConent
               guestCount={guestCount}
-              setInputData={(data: { checkInDate?: Date; checkOutDate?: Date; guestCount?: number }) => {
-                setCheckIn(data.checkInDate);
-                setCheckOut(data.checkOutDate);
-              }}
+              setGuestCount={setGuestCount}
             />
             <DialogClose className="flex w-full">
               <Button className="ml-auto" size="sm">
