@@ -15,7 +15,9 @@ export default function RoomCheckout() {
     <>
       <div className="flex flex-wrap justify-center gap-12 h-full mt-12 relative">
         <Button
-          onClick={() => { void navigate(-1); }}
+          onClick={() => {
+            void navigate(-1);
+          }}
           className="absolute rounded-full left-[10%] p-4"
         >
           <MoveLeft size={20} />

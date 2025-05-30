@@ -16,10 +16,18 @@ import useUserInputContext from "@/hooks/useUserInputContext";
 import type { Room } from "@/types/rooms";
 import { useMutation } from "@tanstack/react-query";
 import { useCreateBookingOption } from "@/api/services/booking";
+import { useFetchBankAccounts } from "@/api/services/bankAccounts";
+import { z } from "zod";
 
 interface CheckOutPaymentCardProps {
   roomData: Room;
 }
+
+const formSchema = z.object({
+  id: z.string().min(1, { message: "account id is required" }),
+  accountNumber: z.string().min(1, { message: "account number is required" }),
+  pin: z.string().min(1, { message: "pin is required" }),
+});
 
 const DEPOSIT_PERCENT = 0.25;
 
@@ -27,7 +35,12 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const { mutate: createBookingMutation } = useMutation(
     useCreateBookingOption()
   );
+  const { data: bankAccounts } = useFetchBankAccounts();
   const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
+
+  //Form Error
+  const [errors, setErrors] =
+    useState<z.ZodFormattedError<(typeof formSchema)["_output"]>>();
 
   // Calculate duration and total cost
   const { days: duration = 0 } =
@@ -39,6 +52,39 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const formValues = Object.fromEntries(formData);
+    const userAcc = bankAccounts?.find((acc) => acc.id === formValues.id);
+    const result = formSchema.safeParse(formValues);
+
+    if (!result.success) {
+      setErrors(result.error.format());
+      return;
+    }
+    setErrors(undefined);
+
+    // Check whether accountNumber and pin match, and if they don't match setErrors as same format with zod error format to reuse the errors state for error msg
+    if (userAcc) {
+      if (formValues.accountNumber !== userAcc.accountNumber) {
+        setErrors((prev) => ({
+          ...prev,
+          _errors: [],
+          accountNumber: {
+            _errors: ["Account number does not match."],
+          },
+        }));
+      }
+      if (formValues.pin !== userAcc.pin) {
+        setErrors((prev) => ({
+          ...prev,
+          _errors: [],
+          pin: {
+            _errors: ["Pin does not match."],
+          },
+        }));
+      }
+    }
+
     if (!checkInDate) {
       toast.error("Check-in date is required.");
       return;
@@ -51,7 +97,16 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       guestCount: totalGuest,
       totalAmount: totalCost,
     };
-    createBookingMutation(payload);
+    if (
+      !errors ||
+      Object.values(errors).every(
+        (field) => !("_errors" in field) || field._errors.length === 0
+      )
+    ) {
+      console.log("hi");
+      setErrors(undefined);
+      createBookingMutation(payload);
+    }
   };
   return (
     <div className="border rounded-lg min-w-[450px]  p-8 ">
@@ -109,32 +164,63 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
           <AccordionTrigger>2. Add a payment method</AccordionTrigger>
           <AccordionContent>
             <form onSubmit={handleSubmit}>
-              <div className="flex flex-col">
-                <label htmlFor="name">Account Name:</label>
+              <div className="flex flex-col relative">
+                <label
+                  htmlFor="id"
+                  className="after:ml-0.5 after:text-red-700 after:content-['*']"
+                >
+                  Account Id:
+                </label>
                 <input
-                  name="name"
-                  id="name"
+                  name="id"
+                  id="id"
                   type="text"
                   className="border px-4 py-2 rounded-md m-2"
                 />
+                {errors?.id && errors.id._errors.length > 0 && (
+                  <p className="text-red-700 text-xs mb-4">
+                    {errors.id._errors[0]}
+                  </p>
+                )}
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="accountNo">Bank Account No:</label>
+              <div className="flex flex-col relative">
+                <label
+                  htmlFor="accountNumber"
+                  className="after:ml-0.5 after:text-red-700 after:content-['*']"
+                >
+                  Bank Account No:
+                </label>
                 <input
-                  name="accountNo"
-                  id="accountNo"
+                  name="accountNumber"
+                  id="accountNumber"
                   type="text"
                   className="border px-4 py-2 rounded-md m-2"
                 />
+                {errors?.accountNumber &&
+                  errors.accountNumber._errors.length > 0 && (
+                    <p className="text-red-700 text-xs mb-4">
+                      {errors.accountNumber._errors[0]}
+                    </p>
+                  )}
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="pin">Secret Pin:</label>
+              <div className="flex flex-col relative">
+                <label
+                  htmlFor="pin"
+                  className="after:ml-0.5 after:text-red-700 after:content-['*']"
+                >
+                  Secret Pin:
+                </label>
                 <input
                   name="pin"
                   id="pin"
                   type="password"
                   className="border px-4 py-2 rounded-md m-2"
                 />
+                {errors?.pin && errors.pin._errors.length > 0 && (
+                  <p className="text-red-700 text-xs mb-4">
+                    {errors.pin._errors[0]}
+                  </p>
+                )}
               </div>
               <div className="flex justify-end mt-4">
                 <Button className="px-4 py-2 rounded transition">Pay</Button>
