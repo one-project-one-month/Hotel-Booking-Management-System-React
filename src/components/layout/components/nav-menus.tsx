@@ -20,6 +20,7 @@ import { Link } from "react-router";
 
 const menuSections: {
   items: {
+    id: number
     label: string;
     icon: ReactNode;
     isDanger?: boolean;
@@ -29,16 +30,19 @@ const menuSections: {
   {
     items: [
       {
+        id: 1,
         label: "Profile",
         icon: <User className="w-4 h-4 mr-2" />,
         route: "/profile",
       },
       {
+        id: 2,
         label: "History",
         icon: <Clock className="w-4 h-4 mr-2" />,
         route: "/history",
       },
       {
+        id: 3,
         label: "Receipt",
         icon: <Receipt className="w-4 h-4 mr-2" />,
         route: "/receipt",
@@ -48,6 +52,7 @@ const menuSections: {
   {
     items: [
       {
+        id: 4,
         label: "Coupons",
         icon: <Percent className="w-4 h-4 mr-2" />,
         route: "/coupons",
@@ -57,6 +62,7 @@ const menuSections: {
   {
     items: [
       {
+        id: 5,
         label: "Help Center",
         icon: <HelpCircle className="w-4 h-4 mr-2" />,
         route: "/",
@@ -66,6 +72,7 @@ const menuSections: {
   {
     items: [
       {
+        id: 6,
         label: "Log Out",
         icon: <LogOut className="w-4 h-4 mr-2 text-red-500" />,
         isDanger: true,
@@ -88,12 +95,12 @@ export default function NavMenus() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56 me-1.5">
-        {menuSections.map((section, sectionIndex) => (
-          <div key={sectionIndex}>
+        {menuSections.map((section) => (
+          <div key={section.items[0].id} className="space-y-1">
             {section.items.map(
               ({ label, icon, isDanger, route }, itemIndex) => {
                 const showSeparator =
-                  isDanger && (sectionIndex > 0 || itemIndex > 0);
+                  isDanger;
                 return (
                   <>
                     {showSeparator && <DropdownMenuSeparator />}

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -7,27 +7,23 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { UserInputContext } from "@/context/UserInputContext";
+import useUserInputContext from "@/hooks/useUserInputContext";
 
 export default function DateSelector() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarFocus, setCalendarFocus] = useState<"checkin" | "checkout">(
     "checkin"
   );
-  const context = useContext(UserInputContext);
-  if (!context || !context.setInputData) {
-    throw new Error(
-      "UserInputContext must be used within a UserInputContextProvider"
-    );
-  }
-  const { inputData, setInputData } = context;
-  // Use checkInDate and checkOutDate directly from context
-  const checkInDate = inputData.checkIn
-    ? new Date(inputData.checkIn)
-    : undefined;
-  const checkOutDate = inputData.checkOut
-    ? new Date(inputData.checkOut)
-    : undefined;
+  
+  const { checkInDate: rawCheckInDate, checkOutDate: rawCheckOutDate, setCheckIn, setCheckOut } = useUserInputContext();
+
+  // Ensure the dates are either Date or undefined
+  const checkInDate = typeof rawCheckInDate === "string"
+    ? undefined
+    : rawCheckInDate;
+  const checkOutDate = typeof rawCheckOutDate === "string" 
+    ? undefined
+    : rawCheckOutDate;
 
   const formatDateOrPlaceholder = (
     date: Date | undefined,
@@ -73,16 +69,10 @@ export default function DateSelector() {
                   mode="single"
                   selected={checkInDate}
                   onSelect={(date) => {
-                    setInputData((prev) => ({
-                      ...prev,
-                      checkIn: date ?? "",
-                      // Optionally clear checkOut if it's before new checkIn
-                      checkOut:
-                        prev.checkOut && date && new Date(prev.checkOut) <= date
-                          ? ""
-                          : prev.checkOut,
-                    }));
-                    setCalendarFocus("checkout");
+                    if (date) {
+                      setCheckIn(date);
+                      setCalendarFocus("checkout");
+                    }
                   }}
                   numberOfMonths={2}
                   disabled={(date) => date < new Date()}
@@ -93,16 +83,13 @@ export default function DateSelector() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setInputData((prev) => ({
-                        ...prev,
-                        checkIn: "",
-                        checkOut: "",
-                      }));
+                      setCheckIn(undefined);
+                      setCheckOut(undefined);
                     }}
                   >
                     Clear dates
                   </Button>
-                  <Button size="sm" onClick={() => setCalendarOpen(false)}>
+                  <Button size="sm" onClick={() => { setCalendarOpen(false); }}>
                     Done
                   </Button>
                 </div>
@@ -147,10 +134,9 @@ export default function DateSelector() {
                   mode="single"
                   selected={checkOutDate}
                   onSelect={(date) => {
-                    setInputData((prev) => ({
-                      ...prev,
-                      checkOut: date ?? "",
-                    }));
+                    if (date) {
+                      setCheckOut(date);
+                    }
                     setCalendarOpen(false);
                   }}
                   numberOfMonths={2}
@@ -167,16 +153,13 @@ export default function DateSelector() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setInputData((prev) => ({
-                        ...prev,
-                        checkIn: "",
-                        checkOut: "",
-                      }));
+                      setCheckIn(undefined);
+                      setCheckOut(undefined);
                     }}
                   >
                     Clear dates
                   </Button>
-                  <Button size="sm" onClick={() => setCalendarOpen(false)}>
+                  <Button size="sm" onClick={() => { setCalendarOpen(false); }}>
                     Done
                   </Button>
                 </div>

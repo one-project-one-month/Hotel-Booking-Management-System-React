@@ -9,48 +9,107 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "@/components/ui/button";
-import type { Room } from "@/types/rooms";
 import { intervalToDuration } from "date-fns";
-import { createBooking, type BookingPayload } from "@/api/queries/booking";
+import { type BookingPayload } from "@/api/queries/booking";
 import { toast } from "sonner";
 import useUserInputContext from "@/hooks/useUserInputContext";
+import type { Room } from "@/types/rooms";
+import { useMutation } from "@tanstack/react-query";
+import { useCreateBookingOption } from "@/api/services/booking";
+import { useFetchBankAccounts } from "@/api/services/bankAccounts";
+import { z } from "zod";
 
-type CheckOutPaymentCardProps = {
+interface CheckOutPaymentCardProps {
   roomData: Room;
-};
+}
+
+const formSchema = z.object({
+  id: z.string().min(1, { message: "account id is required" }),
+  accountNumber: z.string().min(1, { message: "account number is required" }),
+  pin: z.string().min(1, { message: "pin is required" }),
+});
+
+const DEPOSIT_PERCENT = 0.25;
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
-  const { inputData } = useUserInputContext();
+  const { mutate: createBookingMutation } = useMutation(
+    useCreateBookingOption()
+  );
+  const { data: bankAccounts } = useFetchBankAccounts();
+  const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
 
-  const checkInDate = inputData.checkIn
-    ? new Date(inputData.checkIn)
-    : new Date();
-  const checkOutDate = inputData.checkOut
-    ? new Date(inputData.checkOut)
-    : undefined;
+  //Form Error
+  const [errors, setErrors] =
+    useState<z.ZodFormattedError<(typeof formSchema)["_output"]>>();
+
   // Calculate duration and total cost
   const { days: duration = 0 } =
     checkInDate && checkOutDate
       ? intervalToDuration({ start: checkInDate, end: checkOutDate })
       : { days: 0 };
-  const guestCount = inputData.guestCount.adults;
+  const totalGuest = guestCount.adults + guestCount.children;
   const totalCost = duration && roomData.price * duration;
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const formValues = Object.fromEntries(formData);
+    const userAcc = bankAccounts?.find((acc) => acc.id === formValues.id);
+    const result = formSchema.safeParse(formValues);
+
+    if (!result.success) {
+      setErrors(result.error.format());
+      return;
+    }
+    setErrors(undefined);
+
+    // Check whether accountNumber and pin match, and if they don't match setErrors as same format with zod error format to reuse the errors state for error msg
+    if (userAcc) {
+      if (formValues.accountNumber !== userAcc.accountNumber) {
+        setErrors((prev) => ({
+          ...prev,
+          _errors: [],
+          accountNumber: {
+            _errors: ["Account number does not match."],
+          },
+        }));
+      }
+      if (formValues.pin !== userAcc.pin) {
+        setErrors((prev) => ({
+          ...prev,
+          _errors: [],
+          pin: {
+            _errors: ["Pin does not match."],
+          },
+        }));
+      }
+    }
+
+    if (!checkInDate) {
+      toast.error("Check-in date is required.");
+      return;
+    }
     const payload: BookingPayload = {
-      userId: "3dd80c5c-cc5f-4fed-9691-32aa502ddaa",
+      userId: "3dd80c5c-cc5f-4fed-9691-32aa502ddaa5",
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      guestCount,
+      guestCount: totalGuest,
       totalAmount: totalCost,
     };
-    const result = createBooking(payload);
-    console.log(result);
+    if (
+      !errors ||
+      Object.values(errors).every(
+        (field) => !("_errors" in field) || field._errors.length === 0
+      )
+    ) {
+      console.log("hi");
+      setErrors(undefined);
+      createBookingMutation(payload);
+    }
   };
   return (
-    <div className="border rounded-lg min-w-100  p-8 ">
+    <div className="border rounded-lg min-w-[450px]  p-8 ">
       <h3 className=" font-bold text-lg mb-4">Comfirm and Pay</h3>
       <Accordion
         className="flex flex-col gap-8"
@@ -80,8 +139,8 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
                   <p className="flex flex-col gap-4">
                     Pay part now, part later
                     <span className="block max-w-[300px] text-xs text-wrap text-gray-500">
-                      ${totalCost * 0.25} SGD now, ${totalCost} SGD charged on
-                      14 Aug. No extra fees.
+                      ${totalCost * DEPOSIT_PERCENT} SGD now, ${totalCost} SGD
+                      charged on 14 Aug. No extra fees.
                     </span>
                   </p>
                 </Label>
@@ -91,7 +150,9 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
             <div className="flex justify-end mt-4">
               <Button
                 className="px-4 py-2 rounded transition"
-                onClick={() => setOpenItem("item-2")}
+                onClick={() => {
+                  setOpenItem("item-2");
+                }}
                 type="button"
               >
                 Next
@@ -103,40 +164,66 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
           <AccordionTrigger>2. Add a payment method</AccordionTrigger>
           <AccordionContent>
             <form onSubmit={handleSubmit}>
-              <div className="flex flex-col">
-                <label htmlFor="name">Account Name:</label>
+              <div className="flex flex-col relative">
+                <label
+                  htmlFor="id"
+                  className="after:ml-0.5 after:text-red-700 after:content-['*']"
+                >
+                  Account Id:
+                </label>
                 <input
-                  name="name"
-                  id="name"
+                  name="id"
+                  id="id"
                   type="text"
                   className="border px-4 py-2 rounded-md m-2"
                 />
+                {errors?.id && errors.id._errors.length > 0 && (
+                  <p className="text-red-700 text-xs mb-4">
+                    {errors.id._errors[0]}
+                  </p>
+                )}
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="accountNo">Bank Account No:</label>
+              <div className="flex flex-col relative">
+                <label
+                  htmlFor="accountNumber"
+                  className="after:ml-0.5 after:text-red-700 after:content-['*']"
+                >
+                  Bank Account No:
+                </label>
                 <input
-                  name="accountNo"
-                  id="accountNo"
+                  name="accountNumber"
+                  id="accountNumber"
                   type="text"
                   className="border px-4 py-2 rounded-md m-2"
                 />
+                {errors?.accountNumber &&
+                  errors.accountNumber._errors.length > 0 && (
+                    <p className="text-red-700 text-xs mb-4">
+                      {errors.accountNumber._errors[0]}
+                    </p>
+                  )}
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="pin">Secret Pin:</label>
+              <div className="flex flex-col relative">
+                <label
+                  htmlFor="pin"
+                  className="after:ml-0.5 after:text-red-700 after:content-['*']"
+                >
+                  Secret Pin:
+                </label>
                 <input
                   name="pin"
                   id="pin"
                   type="password"
                   className="border px-4 py-2 rounded-md m-2"
                 />
+                {errors?.pin && errors.pin._errors.length > 0 && (
+                  <p className="text-red-700 text-xs mb-4">
+                    {errors.pin._errors[0]}
+                  </p>
+                )}
               </div>
               <div className="flex justify-end mt-4">
-                <Button
-                  className="px-4 py-2 rounded transition"
-                  onClick={() => toast("Booking has been successfully placed")}
-                >
-                  Pay
-                </Button>
+                <Button className="px-4 py-2 rounded transition">Pay</Button>
               </div>
             </form>
           </AccordionContent>

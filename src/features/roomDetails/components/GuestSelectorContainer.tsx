@@ -1,38 +1,41 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import GuestSelector from "./GuestSelector"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
+import type { GuestCount, GuestType } from "@/types/booking"
+import useUserInputContext from "@/hooks/useUserInputContext"
 
-type GuestType = "adults" | "children"
-
-interface GuestCount {
-  adults: number
-  children: number
+interface GuestSelectorProps {
+  maxGuests: number
 }
 
-export default function GuestSelectorContainer() {
+export default function GuestSelectorContainer( { maxGuests }: GuestSelectorProps) {
   const [isGuestSelectorOpen, setIsGuestSelectorOpen] = useState(false)
-
-  const [guestCount, setGuestCount] = useState<GuestCount>({
+  const { setGuestCount } = useUserInputContext()
+  const [ totalGuestCount, setTotalGuestCount] = useState<GuestCount>({
     adults: 1,
     children: 0,
   })
 
-  const totalGuests = guestCount.adults + guestCount.children
+  useEffect(() => {
+    setGuestCount(totalGuestCount)
+  }, [totalGuestCount])
+
+  const totalGuests = totalGuestCount.adults + totalGuestCount.children
 
   const getGuestText = () => {
     const total = totalGuests
-    return `${total} ${total === 1 ? "guest" : "guests"}`
+    return `${total.toString()} ${total === 1 ? "guest" : "guests"}`
   }
 
   const handleGuestChange = (type: GuestType, increment: boolean) => {
-    setGuestCount((prev) => {
+    setTotalGuestCount((prev) => {
       const newCount = { ...prev }
 
       if (increment) {
         // Maximum 3 guests (adults + children)
-        if (totalGuests >= 3) {
+        if (totalGuests >= maxGuests) {
           return prev
         }
         newCount[type] += 1
@@ -53,7 +56,7 @@ export default function GuestSelectorContainer() {
         <PopoverTrigger asChild>
           <div
             className="cursor-pointer flex justify-between items-center text-base font-normal"
-            onClick={() => setIsGuestSelectorOpen(!isGuestSelectorOpen)}
+            onClick={() => { setIsGuestSelectorOpen(!isGuestSelectorOpen); }}
           >
             {getGuestText()}
             {isGuestSelectorOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -71,23 +74,23 @@ export default function GuestSelectorContainer() {
             <GuestSelector
               title="Adults"
               subtitle="Age 13+"
-              count={guestCount.adults}
-              onIncrement={() => handleGuestChange("adults", true)}
-              onDecrement={() => handleGuestChange("adults", false)}
+              count={totalGuestCount.adults}
+              onIncrement={() => { handleGuestChange("adults", true); }}
+              onDecrement={() => { handleGuestChange("adults", false); }}
             />
 
             <GuestSelector
               title="Children"
               subtitle="Ages 2–12"
-              count={guestCount.children}
-              onIncrement={() => handleGuestChange("children", true)}
-              onDecrement={() => handleGuestChange("children", false)}
+              count={totalGuestCount.children}
+              onIncrement={() => { handleGuestChange("children", true); }}
+              onDecrement={() => { handleGuestChange("children", false); }}
             />
 
             <p className="text-sm text-muted-foreground">This place has a maximum of 3 guests.</p>
 
             <div className="flex justify-end">
-              <Button variant="ghost" className="underline" onClick={() => setIsGuestSelectorOpen(false)}>
+              <Button variant="ghost" className="underline" onClick={() => { setIsGuestSelectorOpen(false); }}>
                 Close
               </Button>
             </div>

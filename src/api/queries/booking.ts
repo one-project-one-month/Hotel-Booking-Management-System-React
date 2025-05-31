@@ -1,6 +1,6 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_BACKEND_API_URL;
+import { API_URL } from '@/config/constants';
+import type { BookingResponse } from '@/types/api-response';
+import axios, { type AxiosResponse } from 'axios';
 
 export interface BookingPayload {
     userId: string;
@@ -9,12 +9,10 @@ export interface BookingPayload {
     checkOut?: Date;
     guestCount: number;
     totalAmount: number
-
 }
 
-export async function createBooking(payload:BookingPayload) {
-    const response = await axios.post(`${API_URL}/bookings`, payload);
-    console.log(response.data.data)
-    return response;
+export async function createBooking(payload:BookingPayload): Promise<BookingResponse> {
+    const response: AxiosResponse<BookingResponse> = await axios.post(`${API_URL}/bookings`, payload);
+    return response.data;
 }
 
