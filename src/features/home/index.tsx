@@ -3,13 +3,14 @@ import { useFetchRooms } from "@/api/services/rooms";
 import { filterRoomsByType, getFeaturedRooms } from "./utils";
 import Loading from "@/components/loading";
 import Footer from "./components/Footer";
+import { useFetchBankAccounts } from "@/api/services/bankAccounts";
 
 export default function Home() {
-  const { data: rooms = [], isLoading } = useFetchRooms()
+  const { data: rooms = [], isLoading } = useFetchRooms();
   const featuredRooms = getFeaturedRooms(rooms);
   const deluxeRooms = filterRoomsByType(rooms, "Deluxe");
   const standardRooms = filterRoomsByType(rooms, "Standard");
-
+  useFetchBankAccounts();
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh] rounded-full">
@@ -24,7 +25,6 @@ export default function Home() {
         isFeatured={true}
         roomData={featuredRooms}
         title={"Our Popular Rooms"}
-
       />
       <RoomCarousel
         isFeatured={false}
@@ -38,7 +38,7 @@ export default function Home() {
         title={"Standard Rooms"}
         roomType="Standard"
       />
-      <Footer/>
+      <Footer />
     </>
   );
 }

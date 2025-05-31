@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 
-type ImgContainerProps = {
+interface ImgContainerProps {
   imgUrl: string;
 };
 
@@ -28,8 +28,8 @@ function ImgContainer({ imgUrl }: ImgContainerProps) {
           src={imgUrl}
           alt=""
           className="hidden"
-          onLoad={() => setImgLoaded(true)}
-          onError={() => setImgError(true)}
+          onLoad={() => { setImgLoaded(true); }}
+          onError={() => { setImgError(true); }}
         />
       )}
       {/* Error msg for the error in the img fetching  */}

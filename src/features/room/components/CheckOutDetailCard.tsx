@@ -9,16 +9,15 @@ import type { Room, RoomDescription } from "@/types/rooms";
 
 interface CheckOutDetailCardProps {
   roomData: Room;
-};
+}
 
 function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
   const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
-
+  const totalGuest = guestCount.adults + guestCount.children;
   const detailsStr =
     typeof roomData.details === "string"
       ? roomData.details
       : JSON.stringify(roomData.details);
-      
   const detailsObj = JSON.parse(detailsStr) as RoomDescription;
   const amenities = detailsObj.amenities.length > 0 ? detailsObj.amenities : [];
   const title = detailsObj.title;
@@ -48,7 +47,7 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
   const totalCost = duration && roomData.price * duration;
 
   return (
-    <div className="border rounded-lg w-100 grid p-8">
+    <div className="border rounded-lg w-[450px] grid p-8">
       <div>
         <div className="flex gap-4 pb-4">
           <ImgContainer imgUrl={imgUrl} />
@@ -75,27 +74,27 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
         </div>
         <Separator className="bg-border -mx-1 my-1 h-px" />
       </div>
-      <div className="mt-4 relative">
+      <div className="my-4 relative">
         <h3>Trip Details</h3>
         <p className=" font-extralight text-sm">
           {formattedCheckIn} - {formattedCheckOut}
         </p>
         <p className=" font-extralight text-sm">
-          {guestCount.adults} adult
+          {totalGuest} {totalGuest > 1 ? "guests" : "guest"}
         </p>
         <SelectorDialog />
-        <Separator className="bg-border -mx-1 my-1 h-px" />
       </div>
-      <div className="mt-4 ">
+      <Separator className="bg-border -mx-1 my-1 h-px" />
+      <div className="my-4 ">
         <h3>Price Details</h3>
         <p className="flex font-extralight text-sm">
           ${roomData.price} x {duration}{" "}
           {duration && duration > 1 ? "nights" : "night"}{" "}
           <span className="font-extralight text-sm ml-auto">${totalCost}</span>
         </p>
-        <Separator className="bg-border mt-4 -mx-1 my-1 h-px" />
       </div>
-      <div className="mt-4">
+      <Separator className="bg-border my-4 -mx-1 h-px" />
+      <div className="my-4">
         <p className="flex">
           <span className="mr-auto">Total</span>
           <span className="ml-auto">${totalCost}</span>

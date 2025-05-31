@@ -10,14 +10,11 @@ import ReviewContainer from "./ReviewContainer";
 import { useEffect, type Key } from "react";
 
 import useGuestLimit from "@/hooks/useGuestLimit";
+import useUserInputContext from "@/hooks/useUserInputContext";
 
-export default function RoomDetailUi({
-  currentRoom,
-}: {
-  currentRoom: Room;
-}) {
+export default function RoomDetailUi({ currentRoom }: { currentRoom: Room }) {
   const { setMaxGuestCount } = useGuestLimit();
-
+  const { checkInDate, checkOutDate } = useUserInputContext();
   const detailsStr =
     typeof currentRoom.details === "string"
       ? currentRoom.details
@@ -55,8 +52,12 @@ export default function RoomDetailUi({
         </section>
         <section className="space-y-4">
           <Picker />
-          <Button className="w-full text-lg py-7 rounded-full cursor-pointer shadow-lg bg-rose-500 hover:bg-rose-600 text-white">
+          <Button
+            disabled={!checkInDate || !checkOutDate}
+            className="w-full text-lg py-7 rounded-full cursor-pointer shadow-lg bg-rose-500 hover:bg-rose-600 text-white"
+          >
             <Link
+              className="w-full"
               to={`/rooms/checkout/${String(currentRoom.roomNo)}`}
               state={{ roomData: currentRoom }}
             >

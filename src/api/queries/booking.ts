@@ -1,5 +1,6 @@
 import { API_URL } from '@/config/constants';
-import axios from 'axios';
+import type { BookingResponse } from '@/types/api-response';
+import axios, { type AxiosResponse } from 'axios';
 
 export interface BookingPayload {
     userId: string;
@@ -10,11 +11,8 @@ export interface BookingPayload {
     totalAmount: number
 }
 
-// define type for the booking response (write type definition inside types folder)
-
-export async function createBooking(payload:BookingPayload) {
-    const response = await axios.post(`${API_URL}/bookings`, payload);
-    console.log(response.data.data)
-    return response;
+export async function createBooking(payload:BookingPayload): Promise<BookingResponse> {
+    const response: AxiosResponse<BookingResponse> = await axios.post(`${API_URL}/bookings`, payload);
+    return response.data;
 }
 

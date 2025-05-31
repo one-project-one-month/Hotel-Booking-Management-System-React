@@ -1,12 +1,15 @@
+import type { BookingResponse } from '@/types/api-response';
 import { createBooking, type BookingPayload } from '../queries/booking';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {  useQueryClient, type MutationOptions } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-export const useCreateBooking = (payload: BookingPayload) => {
+export const useCreateBookingOption = (): MutationOptions<BookingResponse, unknown, BookingPayload> => {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: () => createBooking(payload),
+    return {
+        mutationFn: (payload: BookingPayload) => createBooking(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["booking"] });
+           void queryClient.invalidateQueries({ queryKey: ["booking"] });
+            toast.success("Room booked successfully!")
           },
-        })
+        }
 }
