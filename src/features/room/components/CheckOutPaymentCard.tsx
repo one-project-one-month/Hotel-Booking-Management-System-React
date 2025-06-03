@@ -18,6 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useCreateBookingOption } from "@/api/services/booking";
 import { useFetchBankAccounts } from "@/api/services/bankAccounts";
 import { z } from "zod";
+import { useNavigate } from "react-router";
 
 interface CheckOutPaymentCardProps {
   roomData: Room;
@@ -32,6 +33,8 @@ const formSchema = z.object({
 const DEPOSIT_PERCENT = 0.25;
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const { mutate: createBookingMutation } = useMutation(
     useCreateBookingOption()
   );
@@ -52,6 +55,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!token) navigate("/login");
     const formData = new FormData(e.currentTarget);
     const formValues = Object.fromEntries(formData);
     const userAcc = bankAccounts?.find((acc) => acc.id === formValues.id);
@@ -90,7 +94,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       return;
     }
     const payload: BookingPayload = {
-      userId: "3dd80c5c-cc5f-4fed-9691-32aa502ddaa5",
+      userId: "959e8de4-5fb0-4b91-88ce-a0d3dbdf41ee",
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
@@ -107,6 +111,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       createBookingMutation(payload);
     }
   };
+
   return (
     <div className="border rounded-lg min-w-[450px]  p-8 ">
       <h3 className=" font-bold text-lg mb-4">Comfirm and Pay</h3>
