@@ -1,5 +1,5 @@
-import axios, { type AxiosResponse } from 'axios';
-import { API_URL } from '@/config/constants';
+import { type AxiosResponse } from 'axios';
+import Axios from '@/config/api';
 import type { AuthResponse} from '@/types/auth-response';
 
 interface LoginPayload {
@@ -8,6 +8,6 @@ interface LoginPayload {
 }
 
 export async function loginUser(payload: LoginPayload): Promise<AuthResponse> {
-    const response: AxiosResponse<AuthResponse> = await axios.post(`${API_URL}/auth/signin`, payload);
+    const response: AxiosResponse<AuthResponse> = await Axios.post("/auth/signin", payload);
     return response.data;
 }
