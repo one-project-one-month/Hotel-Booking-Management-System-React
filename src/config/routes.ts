@@ -12,6 +12,7 @@ import Coupon from '@/features/profile/coupon';
 import WishLists from '@/features/profile/wish_lists';
 import Receipt from '@/features/profile/receipt';
 import RoomCheckout from "@/features/room/room-checkout";
+import Login from "@/features/auth/Login";
 
 const routes = [
   {
@@ -41,6 +42,10 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/login",
+    Component: Login
+  }
 ];
 
 export const router = createBrowserRouter(routes);
