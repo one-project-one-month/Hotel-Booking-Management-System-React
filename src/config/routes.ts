@@ -13,6 +13,7 @@ import WishLists from '@/features/profile/wish_lists';
 import Receipt from '@/features/profile/receipt';
 import RoomCheckout from "@/features/room/room-checkout";
 import Login from "@/features/auth/Login";
+import RoomSearch from "@/features/room/room-search";
 
 const routes = [
   {
@@ -29,6 +30,7 @@ const routes = [
       { path: "rooms/:type", Component: Room },
       { path: "room/details/:roomId", Component: RoomDetail },
       { path: "rooms/checkout/:roomNo", Component: RoomCheckout },
+      { path: "rooms/search/:total_guests", Component: RoomSearch },
       { path: "bookings", Component: Booking },
       {
         Component: ProfileNavigation,

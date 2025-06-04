@@ -6,10 +6,11 @@ import {
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-type Props = {
+interface Props {
   id: string;
   title: string;
-  description: string;
+  label: string;
+  value: string;
   children: ReactNode;
   isActive: boolean;
   setActivePopover: (id: string | null) => void;
@@ -20,7 +21,8 @@ type Props = {
 export default function PopoverContainer({
   id,
   title,
-  description,
+  label,
+  value,
   children,
   isActive,
   setActivePopover,
@@ -50,7 +52,9 @@ export default function PopoverContainer({
           )}
         >
           <h3 className="text-sm font-semibold px-5">{title}</h3>
-          <p className="text-xs text-zinc-500 px-5">{description}</p>
+          <p className="text-xs text-zinc-500 px-5">
+            {value ? value : label}
+          </p>
         </div>
       </PopoverTrigger>
       <PopoverContent className="mt-2 w-full min-w-[250px] max-w-[90vw] md:max-w-2xl shadow-lg rounded-2xl">

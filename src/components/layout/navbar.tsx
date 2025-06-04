@@ -5,6 +5,7 @@ import Logo from "@/assets/logo.jpg";
 
 import NavMenus from "@/components/layout/components/nav-menus";
 import ChatAssistant from "@/features/chat-assistant";
+import Footer from "@/features/home/components/Footer";
 
 const Navbar: React.FC = () => {
   return (
@@ -25,6 +26,9 @@ const Navbar: React.FC = () => {
       </nav>
       <Outlet />
       <ChatAssistant />
+      <div className="my-12">
+        <Footer />
+      </div>
     </>
   );
 };

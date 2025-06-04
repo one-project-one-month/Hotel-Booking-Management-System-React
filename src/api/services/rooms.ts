@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchRooms, fetchRoomById } from '@/api/queries/room';
+import { fetchRooms, fetchRoomById, fetchFilterRooms } from '@/api/queries/room';
 import type { Room } from '@/types/rooms';
 
 
@@ -17,3 +17,11 @@ export const useFetchRoomById = (roomId: string) => {
         enabled: !!roomId,
     });
 }
+
+export const useFetchFilterRooms = (totalGuests: string) => {
+    return useQuery<Room[]>({
+        queryKey: ['rooms', 'search', totalGuests],
+        queryFn: () => fetchFilterRooms(totalGuests),
+        enabled: !!totalGuests,
+    });
+};
