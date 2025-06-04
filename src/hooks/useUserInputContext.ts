@@ -21,14 +21,23 @@ function useUserInputContext() {
     const setGuestCount = (guestCount: { adults: number; children: number }) => {
         setInputData((prev) => ({ ...prev, guestCount }));
     }
-
+    const resetContext = () => {
+        setInputData(()=>({checkIn: undefined,
+            checkOut: undefined,
+            guestCount: {
+              adults: 0,
+              children: 0,
+            },
+            maxGuestCount: 0,}))
+    }
     return {
       checkInDate: inputData.checkIn,
       checkOutDate: inputData.checkOut,
       guestCount: inputData.guestCount,
       setCheckIn,
       setCheckOut,
-      setGuestCount
+      setGuestCount,
+      resetContext
     }
 }
 

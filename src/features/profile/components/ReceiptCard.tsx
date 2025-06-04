@@ -20,11 +20,11 @@ interface ReceiptCardProps {
 function ReceiptCard({ userData, index }: ReceiptCardProps) {
   const receipt = userData.bookings[index];
   const { data: room } = useFetchRoomById(receipt.room_id);
-  const { days: duration = 0 } =
+  let { days: duration = 0 } =
     receipt.check_in && receipt.check_out
-      ? intervalToDuration({ start: receipt.check_out, end: receipt.check_in })
+      ? intervalToDuration({ start: receipt.check_in, end: receipt.check_out })
       : { days: 0 };
-
+  duration = Math.abs(duration);
   console.log(receipt);
   return (
     <div className="border p-6 min-w-fit rounded-lg bg-pink-200 text-gray-800">
