@@ -18,6 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useCreateBookingOption } from "@/api/services/booking";
 import { useFetchBankAccounts } from "@/api/services/bankAccounts";
 import { z } from "zod";
+import PaymentConditions from "./PaymentConditions";
 
 interface CheckOutPaymentCardProps {
   roomData: Room;
@@ -37,6 +38,8 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   );
   const { data: bankAccounts } = useFetchBankAccounts();
   const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
+  const [checked, setChecked] = useState(false);
+  const [isFinishedReading, setIsFinishedReading] = useState(false);
 
   //Form Error
   const [errors, setErrors] =
@@ -221,8 +224,14 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
                   </p>
                 )}
               </div>
-              <div className="flex justify-end mt-4">
-                <Button className="px-4 py-2 rounded transition">Pay</Button>
+              <div className="flex flex-col space-y-2 mt-4">
+                <PaymentConditions 
+                  checked={checked}
+                  setChecked={setChecked}
+                  isFinishedReading={isFinishedReading}
+                  setFinishedReading={setIsFinishedReading}
+                />
+                <Button disabled={!checked} className="px-4 cursor-pointer bg-pink-600 hover:bg-pink-700 py-2 rounded transition">Pay</Button>
               </div>
             </form>
           </AccordionContent>
