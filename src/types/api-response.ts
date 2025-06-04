@@ -2,7 +2,7 @@ export interface ApiResponse<T> {
     data: T;
 }
 
-interface BookingResponseData {
+export interface BookingData {
     id: string;
     userId: string;
     roomId: string;
@@ -21,5 +21,5 @@ interface BookingResponseData {
 
 export interface BookingResponse {
     message: string;
-    data: BookingResponseData;
+    data: BookingData;
 }

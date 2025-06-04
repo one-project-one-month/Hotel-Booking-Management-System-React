@@ -30,7 +30,7 @@ const formSchema = z.object({
   pin: z.string().min(1, { message: "pin is required" }),
 });
 
-const DEPOSIT_PERCENT = 0.25;
+const DEPOSIT_PERCENT = 0.1;
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const navigate = useNavigate();
@@ -55,7 +55,10 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!token) navigate("/login");
+    // navigate to login page if user token is not available
+    if (!token) void navigate("/login");
+
+    //get Form data
     const formData = new FormData(e.currentTarget);
     const formValues = Object.fromEntries(formData);
     const userAcc = bankAccounts?.find((acc) => acc.id === formValues.id);
