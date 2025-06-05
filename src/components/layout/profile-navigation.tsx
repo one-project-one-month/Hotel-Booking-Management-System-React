@@ -42,7 +42,7 @@ export default function ProfileNavigation() {
                     <Button variant="destructive" className="w-full mb-8 cursor-pointer py-4">Logout</Button>
                 </nav>
             </aside>
-            <div className="flex-1 md:border md:border-gray-200 p-4">
+            <div className="flex-1 max-h-screen overflow-auto md:border md:border-gray-200 p-4">
                 <Outlet />
             </div>
         </div>

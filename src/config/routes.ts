@@ -14,6 +14,7 @@ import Receipt from '@/features/profile/receipt';
 import RoomCheckout from "@/features/room/room-checkout";
 import Login from "@/features/auth/Login";
 import RoomSearch from "@/features/room/room-search";
+import Signup from "@/features/auth/Signup";
 
 const routes = [
   {
@@ -47,7 +48,11 @@ const routes = [
   {
     path: "/login",
     Component: Login
-  }
+  },
+  {
+    path: "/signup",
+    Component: Signup
+  },
 ];
 
 export const router = createBrowserRouter(routes);

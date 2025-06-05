@@ -7,3 +7,7 @@ export interface Coupon {
   expiry_date: Date;
   user_id: string;
 };
+
+export type CouponApplied = Pick<Coupon, 'id' | 'code' | 'discount'>;
+
+

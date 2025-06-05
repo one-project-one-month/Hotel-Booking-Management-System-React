@@ -9,6 +9,7 @@ export default function Coupon() {
   const { data: coupons = [], isLoading } = useFetchCoupons()
 
   const isLoggedIn = localStorage.getItem("token") !== null;
+  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
