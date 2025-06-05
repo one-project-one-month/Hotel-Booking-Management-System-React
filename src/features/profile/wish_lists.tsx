@@ -12,12 +12,12 @@ export default function WishLists() {
 
   const hasWishList = favRooms !== null;
   const wishList: Room[] = hasWishList
-  ? Array.isArray(JSON.parse(favRooms))
-  ? (JSON.parse(favRooms) as Room[])
-  : []
-  : [];
+    ? Array.isArray(JSON.parse(favRooms))
+      ? (JSON.parse(favRooms) as Room[])
+      : []
+    : [];
 
-  const [rooms,setRooms] = useState<Room[]>(wishList);
+  const [rooms, setRooms] = useState<Room[]>(wishList);
 
   return (
     <>
@@ -26,10 +26,16 @@ export default function WishLists() {
           {rooms.map((room) => (
             <div
               key={room.id}
-              onClick={() => navigate(`/room/details/${room.id}`)}
+              onClick={() => {
+                navigate(`/room/details/${room.id}`);
+              }}
               className="cursor-pointer"
             >
-              <FavRoom room={room} hasWishList={hasWishList} setRooms={setRooms}/>
+              <FavRoom
+                room={room}
+                hasWishList={hasWishList}
+                setRooms={setRooms}
+              />
             </div>
           ))}
         </div>

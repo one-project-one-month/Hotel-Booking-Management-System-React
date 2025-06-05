@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import type { Room } from "@/types/rooms.ts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import {toast} from 'sonner';
+import { toast } from "sonner";
 
 import { FAVS_KEY } from "@/config/constants";
+import { router } from "@/config/routes";
 
 export default function Room({
   room,
@@ -18,6 +19,7 @@ export default function Room({
   hasWishList: boolean;
   setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
 }) {
+  const navigate = useNavigate();
   const [imgLoaded, setImgLoaded] = useState(false);
   const imgUrl = (
     typeof room.imgUrl === "string"
@@ -39,12 +41,12 @@ export default function Room({
 
     localStorage.setItem(FAVS_KEY, JSON.stringify(updatedWishlist));
     setRooms(updatedWishlist);
-    toast.success("Removed from favorites!")
+    toast.success("Removed from favorites!");
 
     //clear localstorage
     if (wishlist.length === 1) {
-      console.log('hit');
-      
+      console.log("hit");
+
       localStorage.removeItem(FAVS_KEY);
     }
   };
@@ -69,8 +71,8 @@ export default function Room({
         </span>
         {hasWishList && (
           <Trash2
-            fill="red"
-            color="pink"
+            fill="#ec7063"
+            color="white"
             className="absolute top-2 right-2 cursor-pointer text-xs"
             onClick={handleRemoveFromWishList}
           />
@@ -87,11 +89,19 @@ export default function Room({
               <span className="text-gray-500 text-sm">/Night</span>
             </div>
           </div>
-          <Link to={`/room/details/${room.id}`} className="self-end">
-            <Button className="text-sm w-full bg-pink-400 hover:bg-pink-500 cursor-pointer text-white py-2 px-4 rounded-full">
+
+          <div
+            className="self-end"
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              if (room.status == "Booked") return;
+              navigate(`/room/details/${room.id}`);
+            }}
+          >
+            <Button className={`text-sm w-full self-end bg-pink-400 hover:bg-pink-500 cursor-pointer text-white py-2 px-4 rounded-full ${room.status=="Booked" ? "bg-pink-300 cursor-default hover:bg-pink-300" :""}`}>
               Book Now
             </Button>
-          </Link>
+          </div>
         </div>
       </div>
     </div>
