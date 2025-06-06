@@ -2,7 +2,6 @@ import RoomCarousel from "./components/RoomCarousel";
 import { useFetchRooms } from "@/api/services/rooms";
 import { filterRoomsByType, getFeaturedRooms } from "./utils";
 import Loading from "@/components/loading";
-import Footer from "./components/Footer";
 import { useFetchBankAccounts } from "@/api/services/bankAccounts";
 
 export default function Home() {
@@ -38,7 +37,6 @@ export default function Home() {
         title={"Standard Rooms"}
         roomType="Standard"
       />
-      <Footer />
     </>
   );
 }

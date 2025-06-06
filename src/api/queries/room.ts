@@ -11,3 +11,8 @@ export async function fetchRoomById(roomId: string): Promise<Room> {
     const response = await Axios.get<ApiResponse<Room>>(`/room/${roomId}`);
     return response.data.data;
 }
+
+export async function fetchFilterRooms(total_guests: string): Promise<Room[]> {
+    const response = await Axios.get<ApiResponse<Room[]>>(`/room/search?total_guests=${total_guests}`);
+    return response.data.data;
+}

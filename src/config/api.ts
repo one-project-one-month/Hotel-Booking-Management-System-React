@@ -29,13 +29,11 @@ Axios.interceptors.request.use(
     }
 );
 
-// Room Assistant API instance (no auth needed)
 const RoomAssistantAxios = axios.create({
     baseURL: import.meta.env.VITE_CHAT_ASSISTANT_API_URL as string,
     headers: {
         "Content-Type": 'application/json',
-    },
-    timeout: 10000,
+    }
 });
 
 export default Axios;

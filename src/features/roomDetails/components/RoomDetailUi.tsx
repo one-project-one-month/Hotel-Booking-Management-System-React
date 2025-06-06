@@ -11,8 +11,11 @@ import { useEffect, type Key } from "react";
 
 import useGuestLimit from "@/hooks/useGuestLimit";
 import useUserInputContext from "@/hooks/useUserInputContext";
+import { useCouponReducer } from "@/hooks/useCouponReducer";
 
 export default function RoomDetailUi({ currentRoom }: { currentRoom: Room }) {
+  const { getCoupons } = useCouponReducer()
+  console.log("Getting from room details page", getCoupons())
   const { setMaxGuestCount } = useGuestLimit();
   const { checkInDate, checkOutDate } = useUserInputContext();
   const detailsStr =
