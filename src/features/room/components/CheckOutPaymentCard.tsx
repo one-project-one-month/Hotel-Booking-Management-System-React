@@ -62,7 +62,6 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
     // navigate to login page if user token is not available
     if (!token) void navigate("/login");
 
-    //get Form data
     const formData = new FormData(e.currentTarget);
     const formValues = Object.fromEntries(formData);
     const userAcc = bankAccounts?.find((acc) => acc.id === formValues.id);
