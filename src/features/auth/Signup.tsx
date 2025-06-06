@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,13 +15,23 @@ import {
 } from "@/components/ui/form";
 
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router";
+import { useSignUp } from "@/api/services/auth";
+import { useMutation } from "@tanstack/react-query";
+import type { SignupPayload } from "@/types/auth-payload";
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const {mutate: createSignUp, isPending} = useMutation(useSignUp())
 
   const formSchema = z
     .object({
+      name: z
+        .string()
+        .min(1, { message: "This field has to be filled." })
+        .max(50, { message: "Name must not exceed 50 characters." }),
       email: z
         .string()
         .min(1, { message: "This field has to be filled." })
@@ -30,7 +41,13 @@ export default function Signup() {
         .min(8, { message: "Password must be at least 8 characters." }),
       confirmPassword: z
         .string()
-        .min(8, { message: "Confirm Password must be at least 8 characters." }),
+        .min(8, { message: "Confirm Password must be at least 8 characters." })
+        .optional(),
+      phoneNumber: z
+        .string()
+        .min(10, { message: "Phone number must be at least 10 digits." })
+        .max(15, { message: "Phone number must not exceed 15 digits." }),
+      role: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: "Passwords do not match.",
@@ -44,11 +61,20 @@ export default function Signup() {
       email: "",
       password: "",
       confirmPassword: "",
+      phoneNumber: "",
+      role: "user",
     },
   });
 
-  function onSubmit(values: FormSchema) {
-    console.log(values);
+  function onSubmit(values: FormSchema): void {
+    const payload: SignupPayload = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      phoneNumber: values.phoneNumber,
+      role: values.role
+    }
+    createSignUp(payload)
   }
 
   return (
@@ -64,7 +90,21 @@ export default function Signup() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="lg:space-y-8 md:space-y-5 space-y-8"
           >
-            {/* Email */}
+  
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="email"
@@ -73,6 +113,20 @@ export default function Signup() {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="example@gmail.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone No</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your phone number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,7 +149,7 @@ export default function Signup() {
                       />
                       <button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onClick={() => { setShowPassword(!showPassword) }}
                         className="cursor-pointer absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500"
                       >
                         {showPassword ? (
@@ -117,7 +171,7 @@ export default function Signup() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Re-type Password</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -128,7 +182,7 @@ export default function Signup() {
                       <button
                         type="button"
                         onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
+                          { setShowConfirmPassword(!showConfirmPassword)}
                         }
                         className="cursor-pointer absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500"
                       >
@@ -144,16 +198,18 @@ export default function Signup() {
                 </FormItem>
               )}
             />
-            <button
+            <Button
+              type="submit"
+              disabled={isPending}
               className={
-                "w-full bg-blue-900 cursor-pointer hover:bg-blue-800 text-white py-2 px-4 rounded-lg"
+                "w-full cursor-pointer bg-gradient-to-r from-pink-500 to-pink-700 hover:from-pink-600 hover:to-pink-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-pink-200 text-base"
               }
             >
               Submit
-            </button>
+            </Button>
           </form>
         </Form>
-        <p className="text-gray-600 mt-6 text-base">Already have an account? <span className="cursor-pointer text-blue-500">Login here</span></p>
+        <p className="text-gray-600 mt-6 text-base">Already have an account? <Link to="/login" className="cursor-pointer text-blue-500">Login here</Link></p>
 
       </div>
       {/* Right - Images */}

@@ -1,8 +1,34 @@
+import { useFetchCoupons } from '@/api/services/coupon';
 import NoCoupon from '@/assets/no-coupon.png';
+import Loading from '@/components/loading';
 import { Button } from '@/components/ui/button';
 import { Link } from "react-router";
+import CouponList from './components/coupon-list';
 
 export default function Coupon() {
+  const { data: coupons = [], isLoading } = useFetchCoupons()
+
+  const isLoggedIn = localStorage.getItem("token") !== null;
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loading />
+      </div>
+    );
+  }
+  return (
+    <>
+      {isLoggedIn ? (
+        <CouponList coupons={coupons} />
+      ) : (
+        <CouponEmpty />
+      )}
+    </>
+  );
+}
+
+function CouponEmpty() {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center p-6">
       <img src={NoCoupon} alt="No Coupons" className="w-48 mb-6" />
@@ -14,5 +40,5 @@ export default function Coupon() {
         </Button>
       </Link>
     </div>
-  );
+  )
 }

@@ -13,7 +13,11 @@ import CarouselSkeleton from "./CarouselSkeleton";
 import { Link } from "react-router";
 import type { RoomDescription } from "@/types/rooms";
 import { Button } from "@/components/ui/button";
-import { addRoomToFavorites, isRoomInFavorites, removeRoomFromFavorites } from "../utils";
+import {
+  addRoomToFavorites,
+  isRoomInFavorites,
+  removeRoomFromFavorites,
+} from "../utils";
 
 type RoomCardProps = {
   room: Room;
@@ -27,15 +31,20 @@ type CarouselProps = {
 };
 
 function PopularRoomCard({ room }: RoomCardProps) {
-  const imgUrl = (typeof room.imgUrl === 'string' ? JSON.parse(room.imgUrl) : room.imgUrl as string[])[0];
+  const imgUrl = (
+    typeof room.imgUrl === "string"
+      ? JSON.parse(room.imgUrl)
+      : (room.imgUrl as string[])
+  )[0];
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   const [fav, setFav] = useState(() => isRoomInFavorites(room.id));
 
-  const details: RoomDescription = typeof room.details === 'string'
-    ? JSON.parse(room.details)
-    : room.details as RoomDescription;
+  const details: RoomDescription =
+    typeof room.details === "string"
+      ? JSON.parse(room.details)
+      : (room.details as RoomDescription);
   const title = details.title;
 
   const handleFavClick = (e: React.MouseEvent) => {
@@ -116,7 +125,7 @@ export default function RoomCarousel({
   roomData,
   isFeatured,
   title,
-  roomType
+  roomType,
 }: CarouselProps) {
   return (
     <>

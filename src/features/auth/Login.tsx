@@ -18,6 +18,7 @@ import { useLogin } from "@/api/services/auth";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import useRedirectIfAuthenticated from "@/hooks/useRedirect";
+import { Link } from "react-router";
 
 export default function Login() {
   useRedirectIfAuthenticated();
@@ -130,9 +131,9 @@ export default function Login() {
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Don't have an account?{" "}
-              <span className="cursor-pointer text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:underline">
+              <Link to="/signup" className="cursor-pointer text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:underline">
                 Sign up here
-              </span>
+              </Link>
             </p>
           </div>
         </div>

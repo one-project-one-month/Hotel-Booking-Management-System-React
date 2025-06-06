@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { RoomQueryStrategy } from "./service/RoomService";
 import { getRoomStrategy } from "./utils/getRoomStrategy";
-import type { Room } from "@/types/room";
+import type { Room } from "@/types/rooms";
 
 export default function DreamStayChatUI() {
   // Toggle between using mock data and real API responses.
   // Set `isMock` to true during development or testing to simulate API responses
   // without making real network requests. This is useful for faster iteration and 
   // save token . Set to false in production to use real api.
-  const IS_MOCK = true
+  const IS_MOCK = false
   const strategy: RoomQueryStrategy = getRoomStrategy(IS_MOCK);
 
   const [messages, setMessages] = useState([
@@ -41,6 +41,7 @@ export default function DreamStayChatUI() {
 
   useEffect(() => {
     scrollToBottom();
+    console.log("Room Data", roomData)
   }, [messages]);
 
 

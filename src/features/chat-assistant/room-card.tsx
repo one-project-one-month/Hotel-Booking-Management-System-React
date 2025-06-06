@@ -1,5 +1,6 @@
 import { MapPin, Star, Users } from "lucide-react";
 import type { Room } from "@/mock/rooms.ts";
+import { Link } from "react-router";
 
 interface RoomCardProps {
     room: Room
@@ -9,7 +10,7 @@ interface RoomCardProps {
 export default function RoomCard({ room }: RoomCardProps) {
     return (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 mb-3">
-            <div className="h-32 bg-gradient-to-br from-amber-100 to-orange-100 relative">
+            <Link to={"/"} className="h-32 bg-gradient-to-br from-amber-100 to-orange-100 relative">
                 <img
                     src={room.imgUrl[0]}
                     alt={`Room ${room.roomNo.toString()}`}
@@ -22,7 +23,7 @@ export default function RoomCard({ room }: RoomCardProps) {
                 <div className="absolute top-2 right-2 bg-white bg-opacity-90 px-2 py-1 rounded-full text-xs font-medium text-gray-800">
                     ${room.price}/night
                 </div>
-            </div>
+            </Link>
             <div className="p-3">
                 <div className="flex items-center gap-4 text-xs text-gray-600 mb-2">
                     <span className="flex items-center gap-1">
