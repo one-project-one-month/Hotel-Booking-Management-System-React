@@ -149,8 +149,9 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
+      depositAmount: totalCost * DEPOSIT_PERCENT,
       guestCount: totalGuest,
-      totalAmount: roomPrice,
+      totalAmount: totalCost,
     };
     if (
       !errors ||
