@@ -2,11 +2,10 @@ import type { BookingResponse } from '@/types/api-response';
 import { createBooking, type BookingPayload } from '../queries/booking';
 import {  useQueryClient, type MutationOptions } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
 import useUserInputContext from '@/hooks/useUserInputContext';
+import type { Dispatch, SetStateAction } from 'react';
 
-export const useCreateBookingOption = (): MutationOptions<BookingResponse, unknown, BookingPayload> => {
-    const navigate = useNavigate()
+export const useCreateBookingOption = (setOpenReceipt: Dispatch<SetStateAction<boolean>>): MutationOptions<BookingResponse, Error, BookingPayload> => {
   const queryClient = useQueryClient();
   const {resetContext} = useUserInputContext()
     return {
@@ -14,8 +13,12 @@ export const useCreateBookingOption = (): MutationOptions<BookingResponse, unkno
         onSuccess: () => {
            void queryClient.invalidateQueries({ queryKey: ["booking","user"] });
           toast.success("Room booked successfully!")
-          setTimeout(() => void navigate('/'), 500)
+          setOpenReceipt(true)
           resetContext()
-          },
+      },
+      onError: (error) => {
+        toast.error(error.message )
+        console.error("Error reserving room:", error)
+        }
         }
 }

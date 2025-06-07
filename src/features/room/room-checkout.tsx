@@ -9,8 +9,8 @@ export default function RoomCheckout() {
   const location = useLocation();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
   const roomData = location.state?.roomData;
-
   const navigate = useNavigate();
+
   return (
     <>
       <div className="flex flex-wrap justify-center gap-12 h-full mt-12 relative">

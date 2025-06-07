@@ -11,7 +11,8 @@ interface CheckOutDetailCardProps {
 }
 
 function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
-  const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
+  const { checkInDate, checkOutDate, guestCount, roomPrice } =
+    useUserInputContext();
   const totalGuest = guestCount.adults + guestCount.children;
   const detailsStr =
     typeof roomData.details === "string"
@@ -43,7 +44,7 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
       ? intervalToDuration({ start: checkInDate, end: checkOutDate })
       : { days: 0 };
 
-  const totalCost = duration && roomData.price * duration;
+  const totalCost = duration && roomPrice * duration;
 
   return (
     <div className="border rounded-lg w-[450px] grid p-8">
@@ -87,7 +88,7 @@ function CheckOutDetailCard({ roomData }: CheckOutDetailCardProps) {
       <div className="my-4 ">
         <h3>Price Details</h3>
         <p className="flex font-extralight text-sm">
-          ${roomData.price} x {duration}{" "}
+          ${roomPrice} x {duration}{" "}
           {duration && duration > 1 ? "nights" : "night"}{" "}
           <span className="font-extralight text-sm ml-auto">${totalCost}</span>
         </p>

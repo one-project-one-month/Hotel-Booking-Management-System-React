@@ -7,6 +7,7 @@ export interface BookingPayload {
     roomId: string;
     checkIn: Date;
     checkOut?: Date;
+    depositAmount: number,
     guestCount: number;
     totalAmount: number
 }
