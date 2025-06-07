@@ -52,6 +52,18 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const { data: userData } = useFetchUserById(userId);
   const { roomPrice, checkInDate, checkOutDate, guestCount } =
     useUserInputContext();
+  const { data: bankAccounts } = useFetchBankAccounts();
+
+  // Calculate duration and total cost
+  const { days: duration = 0 } =
+    checkInDate && checkOutDate
+      ? intervalToDuration({ start: checkInDate, end: checkOutDate })
+      : { days: 0 };
+  const totalGuest = guestCount.adults + guestCount.children;
+  const totalCost = duration && roomPrice * duration;
+  const depositeAmount = Math.ceil(totalCost * DEPOSIT_PERCENT);
+  const [checked, setChecked] = useState(false);
+  const [isFinishedReading, setIsFinishedReading] = useState(false);
 
   const { mutate: createBookingMutation } = useMutation(
     useCreateBookingOption((open) => {
@@ -65,7 +77,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
               roomId: roomData.id,
               check_in: checkInDate?.toISOString() ?? "",
               check_out: checkOutDate?.toISOString() ?? "",
-              deposit_amount: totalCost * DEPOSIT_PERCENT,
+              deposit_amount: depositeAmount,
               total_amount: totalCost,
               guest_count: totalGuest,
               status: "pending",
@@ -82,19 +94,6 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       setOpenReceipt(open);
     })
   );
-
-  const { data: bankAccounts } = useFetchBankAccounts();
-
-  // Calculate duration and total cost
-  const { days: duration = 0 } =
-    checkInDate && checkOutDate
-      ? intervalToDuration({ start: checkInDate, end: checkOutDate })
-      : { days: 0 };
-  const totalGuest = guestCount.adults + guestCount.children;
-  const totalCost = duration && roomPrice * duration;
-
-  const [checked, setChecked] = useState(false);
-  const [isFinishedReading, setIsFinishedReading] = useState(false);
 
   //Form Error
   const [errors, setErrors] =
@@ -149,7 +148,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      depositAmount: totalCost * DEPOSIT_PERCENT,
+      depositAmount: depositeAmount,
       guestCount: totalGuest,
       totalAmount: totalCost,
     };
@@ -212,8 +211,8 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
                   <p className="flex flex-col gap-4">
                     Pay part now, part later
                     <span className="block max-w-[300px] text-xs text-wrap text-gray-500">
-                      ${totalCost * DEPOSIT_PERCENT} SGD now, ${totalCost} SGD
-                      charged on 14 Aug. No extra fees.
+                      ${depositeAmount} SGD now, ${totalCost} SGD charged on 14
+                      Aug. No extra fees.
                     </span>
                   </p>
                 </Label>
