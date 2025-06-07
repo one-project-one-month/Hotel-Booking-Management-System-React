@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import useUserInputContext from '@/hooks/useUserInputContext';
 import type { Dispatch, SetStateAction } from 'react';
 
-export const useCreateBookingOption = (setOpenReceipt: Dispatch<SetStateAction<boolean>>): MutationOptions<BookingResponse, unknown, BookingPayload> => {
+export const useCreateBookingOption = (setOpenReceipt: Dispatch<SetStateAction<boolean>>): MutationOptions<BookingResponse, Error, BookingPayload> => {
   const queryClient = useQueryClient();
   const {resetContext} = useUserInputContext()
     return {
@@ -15,6 +15,10 @@ export const useCreateBookingOption = (setOpenReceipt: Dispatch<SetStateAction<b
           toast.success("Room booked successfully!")
           setOpenReceipt(true)
           resetContext()
-          },
+      },
+      onError: (error) => {
+        toast.error(error.message )
+        console.error("Error reserving room:", error)
+        }
         }
 }

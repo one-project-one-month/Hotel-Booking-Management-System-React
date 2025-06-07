@@ -146,7 +146,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       return;
     }
     const payload: BookingPayload = {
-      userId: "0fa05b29-7b9c-415a-ac42-e8a7046459e5",
+      userId: userId,
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
