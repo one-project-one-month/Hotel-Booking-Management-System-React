@@ -14,6 +14,9 @@ function useUserInputContext() {
     const setCheckIn = (date: Date | undefined) => {
         setInputData((prev) => ({ ...prev, checkIn: date }));
     };
+    const setRoomPrice = (roomPrice:number) => {
+        setInputData((prev) => ({ ...prev, roomPrice: roomPrice }));
+    };
     const setCheckOut = (date: Date | undefined) => {
         setInputData((prev) => ({ ...prev, checkOut: date }));
     };
@@ -28,16 +31,20 @@ function useUserInputContext() {
               adults: 0,
               children: 0,
             },
-            maxGuestCount: 0,}))
+          maxGuestCount: 0,
+          roomPrice: 0
+        }))
     }
     return {
       checkInDate: inputData.checkIn,
       checkOutDate: inputData.checkOut,
       guestCount: inputData.guestCount,
+      roomPrice: inputData.roomPrice,
       setCheckIn,
       setCheckOut,
       setGuestCount,
-      resetContext
+      resetContext,
+      setRoomPrice
     }
 }
 

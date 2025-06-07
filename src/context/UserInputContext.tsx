@@ -11,16 +11,17 @@ export interface UserInput {
   checkIn: Date | undefined;
   checkOut: Date | undefined;
   guestCount: GuestCount;
-  maxGuestCount: number
-};
+  maxGuestCount: number;
+  roomPrice: number;
+}
 
 interface ProviderProps {
   inputData: UserInput;
   setInputData: Dispatch<SetStateAction<UserInput>>;
-};
+}
 
 // name changed from UserInputContext to BookingContext since this context is used for booking-related data
-const BookingContext =  createContext<ProviderProps | undefined>(undefined);
+const BookingContext = createContext<ProviderProps | undefined>(undefined);
 
 const UserInputContextProvider = ({
   children,
@@ -35,6 +36,7 @@ const UserInputContextProvider = ({
       children: 0,
     },
     maxGuestCount: 0,
+    roomPrice: 0,
   });
   return (
     <BookingContext.Provider value={{ inputData, setInputData }}>

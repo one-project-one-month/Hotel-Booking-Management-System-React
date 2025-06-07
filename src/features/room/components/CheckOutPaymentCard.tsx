@@ -5,6 +5,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@radix-ui/react-separator";
@@ -20,7 +26,9 @@ import { useFetchBankAccounts } from "@/api/services/bankAccounts";
 import { z } from "zod";
 import { useNavigate } from "react-router";
 import PaymentConditions from "./PaymentConditions";
-
+import { useFetchUserById } from "@/api/services/user";
+import ReceiptCard from "@/features/profile/components/ReceiptCard";
+import { DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 
 interface CheckOutPaymentCardProps {
   roomData: Room;
@@ -35,11 +43,18 @@ const formSchema = z.object({
 const DEPOSIT_PERCENT = 0.1;
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const { mutate: createBookingMutation } = useMutation(
-    useCreateBookingOption()
+  const { data: user } = useFetchUserById(
+    "0fa05b29-7b9c-415a-ac42-e8a7046459e5"
   );
+  const navigate = useNavigate();
+  const [openReceipt, setOpenReceipt] = useState(false);
+  const token = localStorage.getItem("token");
+
+  const { roomPrice } = useUserInputContext();
+  const { mutate: createBookingMutation } = useMutation(
+    useCreateBookingOption(setOpenReceipt)
+  );
+
   const { data: bankAccounts } = useFetchBankAccounts();
   const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
   const [checked, setChecked] = useState(false);
@@ -55,7 +70,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       ? intervalToDuration({ start: checkInDate, end: checkOutDate })
       : { days: 0 };
   const totalGuest = guestCount.adults + guestCount.children;
-  const totalCost = duration && roomData.price * duration;
+  const totalCost = duration && roomPrice * duration;
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,12 +115,12 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       return;
     }
     const payload: BookingPayload = {
-      userId: "959e8de4-5fb0-4b91-88ce-a0d3dbdf41ee",
+      userId: "0fa05b29-7b9c-415a-ac42-e8a7046459e5",
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
       guestCount: totalGuest,
-      totalAmount: totalCost,
+      totalAmount: roomPrice,
     };
     if (
       !errors ||
@@ -120,6 +135,24 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
 
   return (
     <div className="border rounded-lg min-w-[450px]  p-8 ">
+      <Dialog open={openReceipt} onOpenChange={setOpenReceipt}>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogContent>
+          <DialogHeader className="p-2 text-green-600 bg-gray-100 rounded-lg font-semibold text-sm">
+            Reservation Successful
+          </DialogHeader>
+          {user && (
+            <ReceiptCard userData={user} index={user.bookings.length - 1} />
+          )}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button onClick={() => void navigate("/")} variant="outline">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <h3 className=" font-bold text-lg mb-4">Comfirm and Pay</h3>
       <Accordion
         className="flex flex-col gap-8"
@@ -233,13 +266,18 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
                 )}
               </div>
               <div className="flex flex-col space-y-2 mt-4">
-                <PaymentConditions 
+                <PaymentConditions
                   checked={checked}
                   setChecked={setChecked}
                   isFinishedReading={isFinishedReading}
                   setFinishedReading={setIsFinishedReading}
                 />
-                <Button disabled={!checked} className="px-4 cursor-pointer bg-pink-600 hover:bg-pink-700 py-2 rounded transition">Pay</Button>
+                <Button
+                  disabled={!checked}
+                  className="px-4 cursor-pointer bg-pink-600 hover:bg-pink-700 py-2 rounded transition"
+                >
+                  Pay
+                </Button>
               </div>
             </form>
           </AccordionContent>

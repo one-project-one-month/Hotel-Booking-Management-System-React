@@ -6,7 +6,6 @@ export default function Receipt() {
     "0fa05b29-7b9c-415a-ac42-e8a7046459e5"
   );
   const bookingData = user?.bookings ?? [];
-  console.log(bookingData);
   return (
     <div className=" h-[90vh] overflow-scroll p-4 flex flex-col items-center">
       <h3 className="text-center my-4 font-semibold text-xl">

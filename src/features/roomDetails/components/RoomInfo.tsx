@@ -1,12 +1,25 @@
 import type { RoomDescription, Room } from "@/types/rooms";
-import { Users, Bed, DollarSign, Eye, Star, Utensils, Wind, Bath, Mountain, Coffee, Info } from 'lucide-react';
+import {
+  Users,
+  Bed,
+  DollarSign,
+  Eye,
+  Star,
+  Utensils,
+  Wind,
+  Bath,
+  Mountain,
+  Coffee,
+  Info,
+} from "lucide-react";
 import ApplyCoupon from "./ApplyCoupon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CouponApplied } from "@/types/coupon";
+import useUserInputContext from "@/hooks/useUserInputContext";
 
 export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
-  const [appliedCoupons, setAppliedCoupons] = useState<CouponApplied[]>([])
-
+  const [appliedCoupons, setAppliedCoupons] = useState<CouponApplied[]>([]);
+  const { roomPrice, setRoomPrice } = useUserInputContext();
   const calculateDiscountPrice = () => {
     let finalPrice = currentRoom.price;
     let totalDiscount = 0;
@@ -18,35 +31,46 @@ export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
       totalDiscount += discount;
       finalPrice -= discount;
     });
-
     return {
       originalPrice: currentRoom.price,
       finalPrice: Math.max(finalPrice, 0),
-      totalDiscount: totalDiscount
+      totalDiscount: totalDiscount,
     };
   };
 
-
   const { originalPrice, totalDiscount, finalPrice } = calculateDiscountPrice();
 
-
   const handleApplyCoupon = (coupon: CouponApplied) => {
-    setAppliedCoupons(prev => [...prev, coupon])
-  }
+    setAppliedCoupons((prev) => [...prev, coupon]);
+  };
 
-  const details: RoomDescription = typeof currentRoom.details === 'string'
-    ? JSON.parse(currentRoom.details) as RoomDescription
-    : currentRoom.details;
+  const details: RoomDescription =
+    typeof currentRoom.details === "string"
+      ? (JSON.parse(currentRoom.details) as RoomDescription)
+      : currentRoom.details;
   const description = details.description;
 
   const getAmenityIcon = (amenity: string) => {
     const amenityLower = amenity.toLowerCase();
-    if (amenityLower.includes('bed')) return <Bed className="w-4 h-4" />;
-    if (amenityLower.includes('curtains') || amenityLower.includes('wind')) return <Wind className="w-4 h-4" />;
-    if (amenityLower.includes('view') || amenityLower.includes('overlook')) return <Eye className="w-4 h-4" />;
-    if (amenityLower.includes('dining') || amenityLower.includes('cook') || amenityLower.includes('meal')) return <Utensils className="w-4 h-4" />;
-    if (amenityLower.includes('bathroom') || amenityLower.includes('shower') || amenityLower.includes('towel')) return <Bath className="w-4 h-4" />;
-    if (amenityLower.includes('trail') || amenityLower.includes('swing')) return <Mountain className="w-4 h-4" />;
+    if (amenityLower.includes("bed")) return <Bed className="w-4 h-4" />;
+    if (amenityLower.includes("curtains") || amenityLower.includes("wind"))
+      return <Wind className="w-4 h-4" />;
+    if (amenityLower.includes("view") || amenityLower.includes("overlook"))
+      return <Eye className="w-4 h-4" />;
+    if (
+      amenityLower.includes("dining") ||
+      amenityLower.includes("cook") ||
+      amenityLower.includes("meal")
+    )
+      return <Utensils className="w-4 h-4" />;
+    if (
+      amenityLower.includes("bathroom") ||
+      amenityLower.includes("shower") ||
+      amenityLower.includes("towel")
+    )
+      return <Bath className="w-4 h-4" />;
+    if (amenityLower.includes("trail") || amenityLower.includes("swing"))
+      return <Mountain className="w-4 h-4" />;
     return <Coffee className="w-4 h-4" />;
   };
 
@@ -54,39 +78,50 @@ export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
     {
       icon: <Users className="w-5 h-5 text-blue-600" />,
       label: "Guest Capacity",
-      value: `Up to ${String(currentRoom.guestLimit)} guest${currentRoom.guestLimit !== 1 ? 's' : ''}`
+      value: `Up to ${String(currentRoom.guestLimit)} guest${
+        currentRoom.guestLimit !== 1 ? "s" : ""
+      }`,
     },
     {
       icon: <Bed className="w-5 h-5 text-purple-600" />,
       label: "Bed Type",
-      value: details.bedSize
-    }
+      value: details.bedSize,
+    },
   ];
 
   const categorizedAmenities = {
-    "Beds & Curtains": details.amenities.filter((a: string) =>
-      a.toLowerCase().includes('bed') ||
-      a.toLowerCase().includes('curtains')
+    "Beds & Curtains": details.amenities.filter(
+      (a: string) =>
+        a.toLowerCase().includes("bed") || a.toLowerCase().includes("curtains")
     ),
-    "Views & Outdoor": details.amenities.filter((a: string) =>
-      a.toLowerCase().includes('view') ||
-      a.toLowerCase().includes('overlook') ||
-      a.toLowerCase().includes('dining table') ||
-      a.toLowerCase().includes('swing') ||
-      a.toLowerCase().includes('trail')
+    "Views & Outdoor": details.amenities.filter(
+      (a: string) =>
+        a.toLowerCase().includes("view") ||
+        a.toLowerCase().includes("overlook") ||
+        a.toLowerCase().includes("dining table") ||
+        a.toLowerCase().includes("swing") ||
+        a.toLowerCase().includes("trail")
     ),
-    "Dining & Kitchen": details.amenities.filter((a: string) =>
-      a.toLowerCase().includes('cook') ||
-      a.toLowerCase().includes('meal') ||
-      a.toLowerCase().includes('veggies')
+    "Dining & Kitchen": details.amenities.filter(
+      (a: string) =>
+        a.toLowerCase().includes("cook") ||
+        a.toLowerCase().includes("meal") ||
+        a.toLowerCase().includes("veggies")
     ),
-    "Bathroom & Linens": details.amenities.filter((a: string) =>
-      a.toLowerCase().includes('bathroom') ||
-      a.toLowerCase().includes('shower') ||
-      a.toLowerCase().includes('towel') ||
-      a.toLowerCase().includes('toiletries')
-    )
+    "Bathroom & Linens": details.amenities.filter(
+      (a: string) =>
+        a.toLowerCase().includes("bathroom") ||
+        a.toLowerCase().includes("shower") ||
+        a.toLowerCase().includes("towel") ||
+        a.toLowerCase().includes("toiletries")
+    ),
   };
+
+  useEffect(() => {
+    if (finalPrice !== roomPrice) {
+      setRoomPrice(finalPrice);
+    }
+  }, [finalPrice, roomPrice]);
 
   return (
     <div className="space-y-6 flex-1">
@@ -100,10 +135,13 @@ export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
                 Featured
               </div>
             )}
-            <div className={`px-3 py-1 rounded-full text-sm font-medium ${currentRoom.status === 'Available'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-red-100 text-red-800'
-              }`}>
+            <div
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                currentRoom.status === "Available"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
               {currentRoom.status}
             </div>
           </div>
@@ -118,8 +156,12 @@ export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
               </div>
               {totalDiscount > 0 && (
                 <div className="mt-1">
-                  <span className="text-xs text-gray-400 line-through">${originalPrice}</span>
-                  <span className="text-xs text-green-600 ml-1 font-medium">Save ${Math.round(totalDiscount)}</span>
+                  <span className="text-xs text-gray-400 line-through">
+                    ${originalPrice}
+                  </span>
+                  <span className="text-xs text-green-600 ml-1 font-medium">
+                    Save ${Math.round(totalDiscount)}
+                  </span>
                 </div>
               )}
             </div>
@@ -135,11 +177,16 @@ export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
 
       <div className="grid grid-cols-2 gap-3">
         {keyHighlights.map((item, index) => (
-          <div key={index} className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+          <div
+            key={index}
+            className="bg-gray-50 rounded-lg p-3 flex items-center gap-2"
+          >
             {item.icon}
             <div className="min-w-0">
               <div className="text-xs text-gray-600 truncate">{item.label}</div>
-              <div className="font-semibold text-gray-900 text-sm truncate">{item.value}</div>
+              <div className="font-semibold text-gray-900 text-sm truncate">
+                {item.value}
+              </div>
             </div>
           </div>
         ))}
@@ -148,7 +195,9 @@ export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
       <div className="space-y-3 bg-blue-50 rounded-lg p-4">
         <div className="flex items-center gap-2">
           <Info className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">About This Room</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            About This Room
+          </h3>
         </div>
         <p className="text-gray-600 leading-relaxed lg:w-2xl md:w-full">
           {description}
@@ -157,25 +206,33 @@ export default function RoomInfo({ currentRoom }: { currentRoom: Room }) {
 
       {details.amenities.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Amenities & Features</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Amenities & Features
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(categorizedAmenities).map(([category, amenities]) => (
-              amenities.length > 0 && (
-                <div key={category} className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-3">{category}</h4>
-                  <div className="space-y-2">
-                    {amenities.map((amenity: string, index: number) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
-                        <div className="text-blue-600 flex-shrink-0">
-                          {getAmenityIcon(amenity)}
+            {Object.entries(categorizedAmenities).map(
+              ([category, amenities]) =>
+                amenities.length > 0 && (
+                  <div key={category} className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-medium text-gray-900 mb-3">
+                      {category}
+                    </h4>
+                    <div className="space-y-2">
+                      {amenities.map((amenity: string, index: number) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <div className="text-blue-600 flex-shrink-0">
+                            {getAmenityIcon(amenity)}
+                          </div>
+                          <span className="text-gray-700">{amenity}</span>
                         </div>
-                        <span className="text-gray-700">{amenity}</span>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )
-            ))}
+                )
+            )}
           </div>
         </div>
       )}
