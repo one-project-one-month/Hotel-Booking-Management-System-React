@@ -28,7 +28,8 @@ import { useNavigate } from "react-router";
 import PaymentConditions from "./PaymentConditions";
 import { useFetchUserById } from "@/api/services/user";
 import ReceiptCard from "@/features/profile/components/ReceiptCard";
-import { DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
+import type { User } from "@/types/user";
 
 interface CheckOutPaymentCardProps {
   roomData: Room;
@@ -43,26 +44,46 @@ const formSchema = z.object({
 const DEPOSIT_PERCENT = 0.1;
 
 function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
-  const { data: user } = useFetchUserById(
-    "0fa05b29-7b9c-415a-ac42-e8a7046459e5"
-  );
   const navigate = useNavigate();
   const [openReceipt, setOpenReceipt] = useState(false);
+  const [receiptData, setReceiptData] = useState<User | null>(null);
   const token = localStorage.getItem("token");
+  const userId = "0fa05b29-7b9c-415a-ac42-e8a7046459e5";
+  const { data: userData } = useFetchUserById(userId);
+  const { roomPrice, checkInDate, checkOutDate, guestCount } =
+    useUserInputContext();
 
-  const { roomPrice } = useUserInputContext();
   const { mutate: createBookingMutation } = useMutation(
-    useCreateBookingOption(setOpenReceipt)
+    useCreateBookingOption((open) => {
+      if (open && userData) {
+        const bookingData: User = {
+          ...userData,
+          bookings: [
+            {
+              id: `temp-${Date.now().toString()}`,
+              userId: userId,
+              roomId: roomData.id,
+              check_in: checkInDate?.toISOString() ?? "",
+              check_out: checkOutDate?.toISOString() ?? "",
+              deposit_amount: totalCost * DEPOSIT_PERCENT,
+              total_amount: totalCost,
+              guest_count: totalGuest,
+              status: "pending",
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              deleted_at: null,
+              user: userId,
+              room: roomData.id,
+            },
+          ],
+        };
+        setReceiptData(bookingData);
+      }
+      setOpenReceipt(open);
+    })
   );
 
   const { data: bankAccounts } = useFetchBankAccounts();
-  const { checkInDate, checkOutDate, guestCount } = useUserInputContext();
-  const [checked, setChecked] = useState(false);
-  const [isFinishedReading, setIsFinishedReading] = useState(false);
-
-  //Form Error
-  const [errors, setErrors] =
-    useState<z.ZodFormattedError<(typeof formSchema)["_output"]>>();
 
   // Calculate duration and total cost
   const { days: duration = 0 } =
@@ -71,7 +92,16 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       : { days: 0 };
   const totalGuest = guestCount.adults + guestCount.children;
   const totalCost = duration && roomPrice * duration;
+
+  const [checked, setChecked] = useState(false);
+  const [isFinishedReading, setIsFinishedReading] = useState(false);
+
+  //Form Error
+  const [errors, setErrors] =
+    useState<z.ZodFormattedError<(typeof formSchema)["_output"]>>();
+
   const [openItem, setOpenItem] = useState<string | undefined>("item-1");
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // navigate to login page if user token is not available
@@ -81,7 +111,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
     const formValues = Object.fromEntries(formData);
     const userAcc = bankAccounts?.find((acc) => acc.id === formValues.id);
     const result = formSchema.safeParse(formValues);
-
+    console.log(formValues);
     if (!result.success) {
       setErrors(result.error.format());
       return;
@@ -136,14 +166,13 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   return (
     <div className="border rounded-lg min-w-[450px]  p-8 ">
       <Dialog open={openReceipt} onOpenChange={setOpenReceipt}>
-        <DialogTrigger>Open</DialogTrigger>
-        <DialogContent>
+        <DialogContent className="max-w-3xl">
           <DialogHeader className="p-2 text-green-600 bg-gray-100 rounded-lg font-semibold text-sm">
             Reservation Successful
           </DialogHeader>
-          {user && (
-            <ReceiptCard userData={user} index={user.bookings.length - 1} />
-          )}
+
+          {receiptData && <ReceiptCard userData={receiptData} index={0} />}
+
           <DialogFooter>
             <DialogClose asChild>
               <Button onClick={() => void navigate("/")} variant="outline">
