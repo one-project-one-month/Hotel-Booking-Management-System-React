@@ -47,6 +47,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const navigate = useNavigate();
   const [openReceipt, setOpenReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<User | null>(null);
+  const [payOption, setPayOption] = useState("option-one");
   const token = localStorage.getItem("token");
   const userId = "0fa05b29-7b9c-415a-ac42-e8a7046459e5";
   const { data: userData } = useFetchUserById(userId);
@@ -77,7 +78,8 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
               roomId: roomData.id,
               check_in: checkInDate?.toISOString() ?? "",
               check_out: checkOutDate?.toISOString() ?? "",
-              deposit_amount: depositeAmount,
+              deposit_amount:
+                payOption === "option-one" ? totalCost : depositeAmount,
               total_amount: totalCost,
               guest_count: totalGuest,
               status: "pending",
@@ -148,7 +150,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       roomId: roomData.id,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      depositAmount: depositeAmount,
+      depositAmount: payOption === "option-one" ? totalCost : depositeAmount,
       guestCount: totalGuest,
       totalAmount: totalCost,
     };
@@ -162,7 +164,6 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
       createBookingMutation(payload);
     }
   };
-
   return (
     <div className="border rounded-lg min-w-[450px]  p-8 ">
       <Dialog open={openReceipt} onOpenChange={setOpenReceipt}>
@@ -198,7 +199,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
             1. Choose when to pay
           </AccordionTrigger>
           <AccordionContent>
-            <RadioGroup defaultValue="option-one">
+            <RadioGroup defaultValue={payOption} onValueChange={setPayOption}>
               <div className="flex items-center justify-between space-x-2">
                 <Label className="font-light" htmlFor="option-one">
                   Pay ${totalCost} SGD now
