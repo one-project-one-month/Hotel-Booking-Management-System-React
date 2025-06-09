@@ -49,7 +49,7 @@ function CheckOutPaymentCard({ roomData }: CheckOutPaymentCardProps) {
   const [receiptData, setReceiptData] = useState<User | null>(null);
   const [payOption, setPayOption] = useState("option-one");
   const token = localStorage.getItem("token");
-  const userId = "0fa05b29-7b9c-415a-ac42-e8a7046459e5";
+  const userId = "82a74ba3-9238-4fdc-bee1-222b4c87c395";
   const { data: userData } = useFetchUserById(userId);
   const { roomPrice, checkInDate, checkOutDate, guestCount } =
     useUserInputContext();

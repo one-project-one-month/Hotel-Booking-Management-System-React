@@ -9,7 +9,7 @@ interface ReceiptCardProps {
 
 function ReceiptCard({ userData, index }: ReceiptCardProps) {
   const receipt = userData.bookings[index];
-  const { data: room } = useFetchRoomById(receipt.room_id);
+  const { data: room } = useFetchRoomById(String(receipt.roomId));
   let { days: duration = 0 } =
     receipt.check_in && receipt.check_out
       ? intervalToDuration({ start: receipt.check_in, end: receipt.check_out })

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 import type { Room } from "@/types/rooms.ts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,7 +8,6 @@ import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { FAVS_KEY } from "@/config/constants";
-import { router } from "@/config/routes";
 
 export default function Room({
   room,
@@ -17,15 +16,15 @@ export default function Room({
 }: {
   room: Room;
   hasWishList: boolean;
-  setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
+  setRooms?: React.Dispatch<React.SetStateAction<Room[]>>;
 }) {
   const navigate = useNavigate();
   const [imgLoaded, setImgLoaded] = useState(false);
-  const imgUrl = (
+  const imgUrlArray: string[] =
     typeof room.imgUrl === "string"
-      ? JSON.parse(room.imgUrl)
-      : (room.imgUrl as string[])
-  )[0];
+      ? (JSON.parse(room.imgUrl) as string[])
+      : room.imgUrl;
+  const imgUrl = imgUrlArray[0];
 
   const handleRemoveFromWishList = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -33,20 +32,20 @@ export default function Room({
 
     if (!favRooms) return;
 
-    const wishlist = JSON.parse(favRooms);
+    const wishlist = JSON.parse(favRooms) as Room[];
 
     const updatedWishlist = wishlist.filter(
       (storeRoom: Room) => storeRoom.id !== room.id
     );
 
     localStorage.setItem(FAVS_KEY, JSON.stringify(updatedWishlist));
-    setRooms(updatedWishlist);
+    if (setRooms) {
+      setRooms(updatedWishlist);
+    }
     toast.success("Removed from favorites!");
 
     //clear localstorage
     if (wishlist.length === 1) {
-      console.log("hit");
-
       localStorage.removeItem(FAVS_KEY);
     }
   };
@@ -62,7 +61,7 @@ export default function Room({
           className={`w-full h-full object-cover transition-opacity duration-500 ${
             imgLoaded ? "opacity-100" : "opacity-0 absolute"
           }`}
-          onLoad={() => setImgLoaded(true)}
+          onLoad={() =>  { setImgLoaded(true)}}
         />
         <span
           className={`absolute top-2 capitalize left-2 bg-white text-xs px-3 py-2 rounded-full text-green-600`}
@@ -95,7 +94,7 @@ export default function Room({
             onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
               if (room.status == "Booked") return;
-              navigate(`/room/details/${room.id}`);
+              void navigate(`/room/details/${room.id}`);
             }}
           >
             <Button className={`text-sm w-full self-end bg-pink-400 hover:bg-pink-500 cursor-pointer text-white py-2 px-4 rounded-full ${room.status=="Booked" ? "bg-pink-300 cursor-default hover:bg-pink-300" :""}`}>

@@ -6,15 +6,15 @@ export interface BookingData {
     id: string;
     userId: string;
     roomId: string;
-    checkIn: string; 
-    checkOut: string; 
-    depositAmount: number;
-    totalAmount: number;
+    check_in: string; 
+    check_out: string; 
+    deposit_amount: number;
+    total_amount: number;
     status: string;
-    guestCount: number;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string | null;
+    guest_count: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
     user: string | null;
     room: string | null;
 }

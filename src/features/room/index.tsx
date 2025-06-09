@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import { useFetchRooms } from "@/api/services/rooms";
 import Loading from "@/components/loading";
 import { filterRoomsByType } from "../home/utils";
+
 export default function RoomContainer() {
   const { type } = useParams<{ type: string }>();
   const { data: rooms, isLoading } = useFetchRooms();
@@ -33,7 +34,6 @@ export default function RoomContainer() {
               room={room}
               key={index}
               hasWishList={false}
-              setRooms={() => {}}
             />
           ))}
         </div>

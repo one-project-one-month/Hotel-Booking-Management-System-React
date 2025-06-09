@@ -12,7 +12,7 @@ interface HistoryTableRowProps {
 function HistoryTableRow({ user, key, history }: HistoryTableRowProps) {
   const checkInDate = format(history.check_in, "dd MMM yyyy");
   const checkOutDate = format(history.check_out, "dd MMM yyyy");
-  const { data: room } = useFetchRoomById(history.room_id);
+  const { data: room } = useFetchRoomById(history.roomId);
   let { days = 0 } = intervalToDuration({
     start: checkInDate,
     end: checkOutDate,

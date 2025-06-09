@@ -4,11 +4,17 @@ import CheckOutPaymentCard from "./components/CheckOutPaymentCard";
 import CheckOutDetailCard from "./components/CheckOutDetailCard";
 import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
+import type { Room } from "@/types/rooms";
 
 export default function RoomCheckout() {
+
+  interface LocationState {
+    roomData?: Room;
+  }
+
   const location = useLocation();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const roomData = location.state?.roomData;
+  const state = location.state as LocationState;
+  const roomData = state.roomData;
   const navigate = useNavigate();
 
   return (
@@ -22,8 +28,12 @@ export default function RoomCheckout() {
         >
           <MoveLeft size={20} />
         </Button>
-        <CheckOutPaymentCard roomData={roomData} />
-        <CheckOutDetailCard roomData={roomData} />
+        {roomData && (
+          <>
+            <CheckOutPaymentCard roomData={roomData} />
+            <CheckOutDetailCard roomData={roomData} />
+          </>
+        )}
       </div>
     </>
   );
