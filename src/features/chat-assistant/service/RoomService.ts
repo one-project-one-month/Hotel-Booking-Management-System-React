@@ -1,4 +1,4 @@
-import type { Room } from "@/types/room";
+import type { Room } from "@/mock/rooms";
 
 export interface RoomQueryStrategy {
     generateSearchQuery(query: string): Promise<string>;
