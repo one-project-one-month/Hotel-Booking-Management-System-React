@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { RoomQueryStrategy } from "./service/RoomService";
 import { getRoomStrategy } from "./utils/getRoomStrategy";
-import type { Room } from "@/types/rooms";
+import type { Room } from "@/mock/rooms";
 
 export default function DreamStayChatUI() {
   // Toggle between using mock data and real API responses.
