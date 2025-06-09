@@ -1,4 +1,4 @@
-import type { Room } from "@/types/room";
+import type { Room } from "@/mock/rooms";
 import { extractRoomNumbers, getRoomData } from "../utils";
 import type { RoomQueryStrategy } from "./RoomService";
 
