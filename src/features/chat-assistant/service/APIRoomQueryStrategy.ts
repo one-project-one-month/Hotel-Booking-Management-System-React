@@ -1,6 +1,6 @@
 import { requestHotelRoomSuggestions } from "@/api/queries/chat-assistant";
 import type { RoomQueryStrategy } from "./RoomService";
-import type { Room } from "@/types/room";
+import type { Room } from "@/mock/rooms";
 import { extractRoomNumbers, getRoomData } from "../utils";
 
 export class APIRoomQueryStrategy implements RoomQueryStrategy {
