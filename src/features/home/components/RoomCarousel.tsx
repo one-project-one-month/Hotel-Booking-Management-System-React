@@ -19,11 +19,11 @@ import {
   removeRoomFromFavorites,
 } from "../utils";
 
-type RoomCardProps = {
+interface RoomCardProps {
   room: Room;
 };
 
-type CarouselProps = {
+interface CarouselProps {
   roomData: Room[];
   isFeatured: boolean;
   title: string;
@@ -31,20 +31,49 @@ type CarouselProps = {
 };
 
 function PopularRoomCard({ room }: RoomCardProps) {
-  const imgUrl = (
-    typeof room.imgUrl === "string"
-      ? JSON.parse(room.imgUrl)
-      : (room.imgUrl as string[])
-  )[0];
+  let imgUrls: string[] = [];
+  if (typeof room.imgUrl === "string") {
+    try {
+      const parsed = JSON.parse(room.imgUrl) as unknown;
+      if (Array.isArray(parsed)) {
+        imgUrls = (parsed as unknown[]).filter((url): url is string => typeof url === "string");
+      }
+    } catch {
+      imgUrls = [];
+    }
+  } else if (Array.isArray(room.imgUrl)) {
+    imgUrls = room.imgUrl.filter((url) => typeof url === "string");
+  }
+  const imgUrl = imgUrls[0] ?? "";
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   const [fav, setFav] = useState(() => isRoomInFavorites(room.id));
 
-  const details: RoomDescription =
-    typeof room.details === "string"
-      ? JSON.parse(room.details)
-      : (room.details as RoomDescription);
+  let details: RoomDescription;
+  if (typeof room.details === "string") {
+    try {
+      const parsed = JSON.parse(room.details) as unknown;
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        "title" in parsed
+      ) {
+        details = parsed as RoomDescription;
+      } else {
+        details = { title: "" } as RoomDescription;
+      }
+    } catch {
+      details = { title: "" } as RoomDescription;
+    }
+  } else if (
+    typeof room.details === "object" &&
+    "title" in room.details
+  ) {
+    details = room.details;
+  } else {
+    details = { title: "" } as RoomDescription;
+  }
   const title = details.title;
 
   const handleFavClick = (e: React.MouseEvent) => {
@@ -97,8 +126,8 @@ function PopularRoomCard({ room }: RoomCardProps) {
               src={imgUrl}
               alt=""
               className="hidden"
-              onLoad={() => setImgLoaded(true)}
-              onError={() => setImgError(true)}
+              onLoad={() => {setImgLoaded(true)}}
+              onError={() => {setImgError(true)}}
             />
           )}
 
@@ -113,8 +142,8 @@ function PopularRoomCard({ room }: RoomCardProps) {
         <p className="text-gray-500 text-xs">
           ${room.price} for night,
           {room.guestLimit === 1
-            ? room.guestLimit + " Guest"
-            : room.guestLimit + " Guests"}
+            ? String(room.guestLimit) + " Guest"
+            : String(room.guestLimit) + " Guests"}
         </p>
       </Link>
     </div>
@@ -148,7 +177,7 @@ export default function RoomCarousel({
           {!isFeatured && (
             <div className="">
               <Link
-                to={`/rooms/${roomType}`}
+                to={`/rooms/${roomType ?? ""}`}
                 className="underline underline-offset-2 text-pink-600 hover:text-pink-700 focus:text-pink-700 text-sm"
               >
                 See More...

@@ -21,7 +21,7 @@ export default function PopularRoom({ room }: { room: Room }) {
           className={`w-full h-60 object-cover transition-opacity duration-500 ${
             imgLoaded ? "opacity-100" : "opacity-0 absolute"
           }`}
-          onLoad={() => setImgLoaded(true)}
+          onLoad={() => {setImgLoaded(true)}}
           loading="lazy"
         />
       </div>
